@@ -56,7 +56,7 @@ angular.module('myApp', ['tmh.dynamiclocale', ...])
 
 ### Running the tests
 
-    ```bash
-    $ grunt karma
-    ```
+```bash
+$ grunt karma
+```
 
