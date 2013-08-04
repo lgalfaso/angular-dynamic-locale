@@ -3,7 +3,6 @@
   "name": "angular-dynamic-locale",
   "description": "Angular Dynamic Locale",
   "version": "0.0.1",
-  "main": "./modules/utils.js",
   "dependencies": {
     "angular-mocks": "~1.0.7",
     "angular": ">= 1.0.7",

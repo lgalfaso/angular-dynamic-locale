@@ -7,7 +7,12 @@ module.exports = function(grunt) {
   grunt.initConfig({
 
     karma: {
-      unit: { configFile: 'karma.conf.js' }
+      unit: { configFile: 'karma.conf.js' },
+      autotest: {
+        configFile: 'karma.conf.js',
+        autoWatch: true,
+        singleRun: false
+      }
     }
   });
 };

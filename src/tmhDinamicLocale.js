@@ -60,7 +60,7 @@ angular.module('tmh.dynamicLocale', []).provider('tmhDynamicLocale', function() 
     }
   };
 
-  this.$get = ['$interpolate', '$locale', function(interpolate, locale) {
+  this.$get = ['$rootScope', '$interpolate', '$locale', function($rootScope, interpolate, locale) {
     var localeLocation = interpolate(localeLocationPattern);
 
     return {
@@ -73,6 +73,7 @@ angular.module('tmh.dynamicLocale', []).provider('tmhDynamicLocale', function() 
        */
       set: function(value) {
         loadLocale(localeLocation({locale: value}), locale);
+        $rootScope.$broadcast('$localeChangeSuccess', value, locale);
       }
     };
   }];

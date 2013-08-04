@@ -25,4 +25,21 @@ describe('dynamicLocale', function() {
       return $locale.id === 'en-us';
     }, 'locale not reverted', 2000);
   }));
+
+  it('should trigger an even when there it changes the locale', inject(function($locale, tmhDynamicLocale, $rootScope) {
+    var callback = jasmine.createSpy();
+
+    runs(function() {
+      $rootScope.$on('$localeChangeSuccess', callback);
+      tmhDynamicLocale.set('es');
+    });
+    waitsFor(function() {
+      return $locale.id === 'es';
+    }, 'locale not updated', 2000);
+    runs(function() {
+      expect(callback.calls.length).toBe(1);
+      expect(callback.calls[0].args[1]).toEqual('es');
+      expect(callback.calls[0].args[2]).toEqual($locale);
+    });
+  }))
 });
