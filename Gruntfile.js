@@ -16,7 +16,7 @@ module.exports = function(grunt) {
       travis: {
         configFile: 'karma.conf.js',
         reporters: 'dots',
-        browsers: ['SL_Chrome']
+        browsers: ['PhantomJS']
       }
     }
   });
