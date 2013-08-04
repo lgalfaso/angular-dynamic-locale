@@ -15,7 +15,8 @@ module.exports = function(grunt) {
       },
       travis: {
         configFile: 'karma.conf.js',
-        reporters: 'dots'
+        reporters: 'dots',
+        browsers: ['SL_Chrome']
       }
     }
   });
