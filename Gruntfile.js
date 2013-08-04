@@ -12,6 +12,10 @@ module.exports = function(grunt) {
         configFile: 'karma.conf.js',
         autoWatch: true,
         singleRun: false
+      },
+      travis: {
+        configFile: 'karma.conf.js',
+        reporters: 'dots'
       }
     }
   });
