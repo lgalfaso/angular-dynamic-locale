@@ -39,15 +39,26 @@ angular.module('tmh.dynamicLocale', []).provider('tmhDynamicLocale', function() 
    * @param localeUrl The path to the new locale
    * @param $locale The locale at the curent scope
    */
-  function loadLocale(localeUrl, $locale) {
+  function loadLocale(localeUrl, $locale, localeId, $rootScope) {
     loadScript(localeUrl, function () {
+      function overrideValues(oldObject, newObject) {
+        angular.forEach(newObject, function(value, key) {
+          if (angular.isArray(newObject[key]) || angular.isObject(newObject[key])) {
+            overrideValues(oldObject[key], newObject[key]);
+          } else {
+            oldObject[key] = newObject[key];
+          }
+        });
+      }
+
       // Create a new injector with the new locale
       var localInjector = angular.injector(['ngLocale']),
         externalLocale = localInjector.get('$locale');
 
-      angular.forEach(externalLocale, function (value, key) {
-        $locale[key] = externalLocale[key];
-      });
+      overrideValues($locale, externalLocale);
+
+      $rootScope.$broadcast('$localeChangeSuccess', localeId, $locale);
+      $rootScope.$apply();
     });
   }
 
@@ -72,8 +83,7 @@ angular.module('tmh.dynamicLocale', []).provider('tmhDynamicLocale', function() 
        *    instance with the information from the new locale
        */
       set: function(value) {
-        loadLocale(localeLocation({locale: value}), locale);
-        $rootScope.$broadcast('$localeChangeSuccess', value, locale);
+        loadLocale(localeLocation({locale: value}), locale, value, $rootScope);
       }
     };
   }];
