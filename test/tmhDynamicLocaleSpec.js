@@ -6,6 +6,15 @@ describe('dynamicLocale', function() {
     tmhDynamicLocaleProvider.localeLocationPattern('/base/components/angular-i18n/angular-locale_{{locale}}.js');
   }));
 
+  afterEach(inject(function($locale, tmhDynamicLocale) {
+    runs(function() {
+      tmhDynamicLocale.set('en-us');
+    });
+    waitsFor(function() {
+      return $locale.id === 'en-us';
+    }, 'locale not reverted', 2000);
+  }));
+
   it('should (eventually) be able to change the locale', inject(function($locale, tmhDynamicLocale) {
     runs(function() {
       tmhDynamicLocale.set('es');
@@ -18,12 +27,7 @@ describe('dynamicLocale', function() {
     runs(function() {
       expect($locale.id).toBe('es');
       expect($locale.DATETIME_FORMATS.DAY["0"]).toBe("domingo");
-      tmhDynamicLocale.set('en-us');
     });
-
-    waitsFor(function() {
-      return $locale.id === 'en-us';
-    }, 'locale not reverted', 2000);
   }));
 
   it('should trigger an even when there it changes the locale', inject(function($locale, tmhDynamicLocale, $rootScope) {
@@ -41,11 +45,7 @@ describe('dynamicLocale', function() {
       expect(callback.calls.length).toBe(1);
       expect(callback.calls[0].args[1]).toEqual('es');
       expect(callback.calls[0].args[2]).toEqual($locale);
-      tmhDynamicLocale.set('en-us');
     });
-    waitsFor(function() {
-      return $locale.id === 'en-us';
-    }, 'locale not reverted', 2000);
   }));
 
   it('should change the already formatted numbers in the page', inject(function($locale, tmhDynamicLocale, $rootScope, $compile) {
@@ -65,11 +65,63 @@ describe('dynamicLocale', function() {
     }, 'locale not updated', 2000);
     runs(function() {
       expect(element.text()).toBe('1.234,568');
+    });
+  }));
 
-      tmhDynamicLocale.set('en-us');
+  it('should keep already loaded locales at tmhDynamicLocaleCache', inject(function($locale, tmhDynamicLocale, tmhDynamicLocaleCache, $rootScope, $compile) {
+    var esLocale = null;
+
+    runs(function() {
+      expect(tmhDynamicLocaleCache.info().size).toBe(0);
+      tmhDynamicLocale.set('es');
+      expect(tmhDynamicLocaleCache.info().size).toBe(0);
     });
     waitsFor(function() {
-      return $locale.id === 'en-us';
-    }, 'locale not reverted', 2000);
+      return $locale.id === 'es';
+    }, 'locale not updated', 2000);
+    runs(function() {
+      expect(tmhDynamicLocaleCache.info().size).toBe(1);
+      expect(tmhDynamicLocaleCache.get('es')).toEqual($locale);
+      esLocale = angular.copy($locale);
+      tmhDynamicLocale.set('it');
+    });
+    waitsFor(function() {
+      return $locale.id === 'it';
+    }, 'locale not updated', 2000);
+    runs(function() {
+      expect(tmhDynamicLocaleCache.info().size).toBe(2);
+      expect(tmhDynamicLocaleCache.get('es')).toEqual(esLocale);
+      expect(tmhDynamicLocaleCache.get('it')).toEqual($locale);
+    });
   }));
+
+  it('should use the cache when possible', inject(function($locale, tmhDynamicLocale, tmhDynamicLocaleCache, $rootScope, $compile) {
+    var callback = jasmine.createSpy();
+
+    runs(function() {
+      tmhDynamicLocale.set('es');
+    });
+    waitsFor(function() {
+      return $locale.id === 'es';
+    }, 'locale not updated', 2000);
+    runs(function() {
+      tmhDynamicLocale.set('it');
+    });
+    waitsFor(function() {
+      return $locale.id === 'it';
+    }, 'locale not updated', 2000);
+    runs(function() {
+      tmhDynamicLocaleCache.get('es').DATETIME_FORMATS.DAY["0"] = "Domingo";
+      $rootScope.$on('$localeChangeSuccess', callback);
+      tmhDynamicLocale.set('es');
+      // Changing the locale should be done async even when this is done from the cache
+      expect(callback.calls.length).toBe(0);
+      expect($locale.id).toBe('it');
+      $rootScope.$apply();
+      expect($locale.id).toBe('es');
+      expect($locale.DATETIME_FORMATS.DAY["0"]).toBe("Domingo");
+      expect(callback.calls.length).toBe(1);
+    });
+  }));
+
 });

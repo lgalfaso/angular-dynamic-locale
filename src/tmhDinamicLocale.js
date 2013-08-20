@@ -39,27 +39,38 @@ angular.module('tmh.dynamicLocale', []).provider('tmhDynamicLocale', function() 
    * @param localeUrl The path to the new locale
    * @param $locale The locale at the curent scope
    */
-  function loadLocale(localeUrl, $locale, localeId, $rootScope) {
-    loadScript(localeUrl, function () {
-      function overrideValues(oldObject, newObject) {
-        angular.forEach(newObject, function(value, key) {
-          if (angular.isArray(newObject[key]) || angular.isObject(newObject[key])) {
-            overrideValues(oldObject[key], newObject[key]);
-          } else {
-            oldObject[key] = newObject[key];
-          }
-        });
-      }
+  function loadLocale(localeUrl, $locale, localeId, $rootScope, localeCache) {
 
-      // Create a new injector with the new locale
-      var localInjector = angular.injector(['ngLocale']),
-        externalLocale = localInjector.get('$locale');
+    function overrideValues(oldObject, newObject) {
+      angular.forEach(newObject, function(value, key) {
+        if (angular.isArray(newObject[key]) || angular.isObject(newObject[key])) {
+          overrideValues(oldObject[key], newObject[key]);
+        } else { 
+          oldObject[key] = newObject[key];
+        } 
+      });
+    } 
 
-      overrideValues($locale, externalLocale);
 
-      $rootScope.$broadcast('$localeChangeSuccess', localeId, $locale);
-      $rootScope.$apply();
-    });
+    var cachedLocale = localeCache.get(localeId);
+    if (cachedLocale) {
+      $rootScope.$evalAsync(function() {
+        overrideValues($locale, cachedLocale);
+        $rootScope.$broadcast('$localeChangeSuccess', localeId, $locale);
+      });
+    } else {
+      loadScript(localeUrl, function () {
+        // Create a new injector with the new locale
+        var localInjector = angular.injector(['ngLocale']),
+          externalLocale = localInjector.get('$locale');
+
+        overrideValues($locale, externalLocale);
+        localeCache.put(localeId, externalLocale);
+
+        $rootScope.$broadcast('$localeChangeSuccess', localeId, $locale);
+        $rootScope.$apply();
+      });
+    }
   }
 
   this.localeLocationPattern = function(value) {
@@ -71,7 +82,7 @@ angular.module('tmh.dynamicLocale', []).provider('tmhDynamicLocale', function() 
     }
   };
 
-  this.$get = ['$rootScope', '$interpolate', '$locale', function($rootScope, interpolate, locale) {
+  this.$get = ['$rootScope', '$interpolate', '$locale', 'tmhDynamicLocaleCache', function($rootScope, interpolate, locale, tmhDynamicLocaleCache) {
     var localeLocation = interpolate(localeLocationPattern);
 
     return {
@@ -83,9 +94,13 @@ angular.module('tmh.dynamicLocale', []).provider('tmhDynamicLocale', function() 
        *    instance with the information from the new locale
        */
       set: function(value) {
-        loadLocale(localeLocation({locale: value}), locale, value, $rootScope);
+        loadLocale(localeLocation({locale: value}), locale, value, $rootScope, tmhDynamicLocaleCache);
       }
     };
   }];
 
+}).provider('tmhDynamicLocaleCache', function() {
+  this.$get = ['$cacheFactory', function($cacheFactory) {
+    return $cacheFactory('tmh.dynamicLocales');
+  }];
 });

@@ -10,9 +10,11 @@
 
 ### Changing the locale
 
-This module defines one service called `tmhDynamicLocale` that provides
-one method called `set(newLocale)`. To change the locale, just call
-this method with the new locale for the application
+This module defines two services, these are `tmhDynamicLocale` and
+`tmhDynamicLocaleCache`.
+
+The service `tmhDynamicLocale` provides has one method `set(newLocale)` to
+change the locale.
 
 ```javascript
 tmhDynamicLocale.set('it');
@@ -20,10 +22,15 @@ tmhDynamicLocale.set('it');
 
 Keep in mind that the locale will be changed asynchronously 
 
-This module expects that the angular locales to be present at
+
+The service `tmhDynamicLocaleCache` is a `$cache` of all the loaded locales,
+where the key is the locale id and the value is the locale object.
+
+
+This module expects for the angular locales to be present at
 `angular/i18n/angular-locale_{{locale}}.js`.
-If you have the angular locales at another path, this can be changed
-at `tmhDynamicLocaleProvider` using `localeLocationPattern(string)`.
+If the locales are at another URL, this can be changed at
+`tmhDynamicLocaleProvider` using `localeLocationPattern(string)`.
 
 
 ## Installation
@@ -59,4 +66,12 @@ angular.module('myApp', ['tmh.dynamiclocale', ...])
 ```bash
 $ grunt karma:unit
 ```
+to run the test once
+
+or
+
+```bash
+$ grunt karma:autotest
+```
+to run the tests continuously
 
