@@ -38,7 +38,7 @@ If the locales are at another URL, this can be changed at
 Add the module to your dependencies
 
 ```javascript
-angular.module('myApp', ['tmh.dynamiclocale', ...])
+angular.module('myApp', ['tmh.dynamicLocale', ...])
 ```
 
 
