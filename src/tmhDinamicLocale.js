@@ -12,7 +12,7 @@ angular.module('tmh.dynamicLocale', []).provider('tmhDynamicLocale', function() 
    */
   function loadScript(url, callback) {
     var script = document.createElement('script'),
-      head = document.getElementsByTagName('head')[0];
+      body = document.getElementsByTagName('body')[0];
 
     script.type = 'text/javascript';
     if (script.readyState) { // IE
@@ -30,7 +30,7 @@ angular.module('tmh.dynamicLocale', []).provider('tmhDynamicLocale', function() 
     }
     script.src = url;
     script.async = false;
-    head.insertBefore(script, head.firstChild);
+    body.appendChild(script);
   }
 
   /**
