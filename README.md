@@ -23,6 +23,12 @@ tmhDynamicLocale.set('it');
 Keep in mind that the locale will be changed asynchronously 
 
 
+After the locale is changed, the event `'$localeChangeSuccess'` will be
+triggered.
+
+Calling `tmhDynamicLocale.set` will return a promise that will be resolved
+when the locale is loaded and will resolve to the new locale.
+
 The service `tmhDynamicLocaleCache` is a `$cache` of all the loaded locales,
 where the key is the locale id and the value is the locale object.
 

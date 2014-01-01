@@ -48,6 +48,38 @@ describe('dynamicLocale', function() {
     });
   }));
 
+  it('should return a promise that has the new locale', inject(function($locale, tmhDynamicLocale, $rootScope) {
+    var result = null;
+    runs(function() {
+      tmhDynamicLocale.set('es').then(function(newLocale) {
+        result = newLocale;
+      });
+      expect(result).toBe(null);
+    });
+    waitsFor(function() {
+      return result !== null;
+    }, 'locale not updated', 2000);
+    runs(function() {
+      expect(result.id).toEqual('es');
+      expect(result).toEqual($locale);
+
+      tmhDynamicLocale.set('it');
+    });
+    waitsFor(function() {
+      return $locale.id === 'it';
+    }, 'locale not updated', 2000);
+    runs(function() {
+      result = null;
+      tmhDynamicLocale.set('es').then(function(newLocale) {
+        result = newLocale;
+      });
+      expect(result).toBe(null);
+      $rootScope.$apply();
+      expect(result.id).toBe('es');
+      expect(result).toBe($locale);
+    });
+  }));
+
   it('should change the already formatted numbers in the page', inject(function($locale, tmhDynamicLocale, $rootScope, $compile) {
     var element = null;
 

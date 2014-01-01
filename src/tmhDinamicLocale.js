@@ -39,7 +39,7 @@ angular.module('tmh.dynamicLocale', []).provider('tmhDynamicLocale', function() 
    * @param localeUrl The path to the new locale
    * @param $locale The locale at the curent scope
    */
-  function loadLocale(localeUrl, $locale, localeId, $rootScope, localeCache) {
+  function loadLocale(localeUrl, $locale, localeId, $rootScope, $q, localeCache) {
 
     function overrideValues(oldObject, newObject) {
       angular.forEach(newObject, function(value, key) {
@@ -52,11 +52,13 @@ angular.module('tmh.dynamicLocale', []).provider('tmhDynamicLocale', function() 
     } 
 
 
-    var cachedLocale = localeCache.get(localeId);
+    var cachedLocale = localeCache.get(localeId),
+      deferred = $q.defer();
     if (cachedLocale) {
       $rootScope.$evalAsync(function() {
         overrideValues($locale, cachedLocale);
         $rootScope.$broadcast('$localeChangeSuccess', localeId, $locale);
+        deferred.resolve($locale);
       });
     } else {
       loadScript(localeUrl, function () {
@@ -68,9 +70,12 @@ angular.module('tmh.dynamicLocale', []).provider('tmhDynamicLocale', function() 
         localeCache.put(localeId, externalLocale);
 
         $rootScope.$broadcast('$localeChangeSuccess', localeId, $locale);
-        $rootScope.$apply();
+        $rootScope.$apply(function () {
+          deferred.resolve($locale);
+        });
       });
     }
+    return deferred.promise;
   }
 
   this.localeLocationPattern = function(value) {
@@ -82,7 +87,7 @@ angular.module('tmh.dynamicLocale', []).provider('tmhDynamicLocale', function() 
     }
   };
 
-  this.$get = ['$rootScope', '$interpolate', '$locale', 'tmhDynamicLocaleCache', function($rootScope, interpolate, locale, tmhDynamicLocaleCache) {
+  this.$get = ['$rootScope', '$interpolate', '$locale', '$q', 'tmhDynamicLocaleCache', function($rootScope, interpolate, locale, $q, tmhDynamicLocaleCache) {
     var localeLocation = interpolate(localeLocationPattern);
 
     return {
@@ -94,7 +99,7 @@ angular.module('tmh.dynamicLocale', []).provider('tmhDynamicLocale', function() 
        *    instance with the information from the new locale
        */
       set: function(value) {
-        loadLocale(localeLocation({locale: value}), locale, value, $rootScope, tmhDynamicLocaleCache);
+        return loadLocale(localeLocation({locale: value}), locale, value, $rootScope, $q, tmhDynamicLocaleCache);
       }
     };
   }];
