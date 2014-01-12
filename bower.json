@@ -6,6 +6,7 @@
   "devDependencies": {
     "angular-mocks": "~1.0.7",
     "angular": ">= 1.0.7",
+    "angular-cookies": ">= 1.0.7",
     "angular-i18n": ">= 1.0.7"
   }
 }

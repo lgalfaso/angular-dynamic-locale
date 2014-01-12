@@ -2,7 +2,9 @@
 
 angular.module('tmh.dynamicLocale', []).provider('tmhDynamicLocale', function() {
 
-  var localeLocationPattern = 'angular/i18n/angular-locale_{{locale}}.js';
+  var localeLocationPattern = 'angular/i18n/angular-locale_{{locale}}.js',
+    storageFactory = 'tmhDynamicLocaleStorageCache',
+    storeKey = 'tmhDynamicLocale.locale';
 
   /**
    * Loads a script asynchronously
@@ -39,7 +41,7 @@ angular.module('tmh.dynamicLocale', []).provider('tmhDynamicLocale', function() 
    * @param localeUrl The path to the new locale
    * @param $locale The locale at the curent scope
    */
-  function loadLocale(localeUrl, $locale, localeId, $rootScope, $q, localeCache) {
+  function loadLocale(localeUrl, $locale, localeId, $rootScope, $q, localeCache, storage) {
 
     function overrideValues(oldObject, newObject) {
       angular.forEach(newObject, function(value, key) {
@@ -58,6 +60,7 @@ angular.module('tmh.dynamicLocale', []).provider('tmhDynamicLocale', function() 
       $rootScope.$evalAsync(function() {
         overrideValues($locale, cachedLocale);
         $rootScope.$broadcast('$localeChangeSuccess', localeId, $locale);
+        storage.put(storeKey, localeId);
         deferred.resolve($locale);
       });
     } else {
@@ -69,8 +72,9 @@ angular.module('tmh.dynamicLocale', []).provider('tmhDynamicLocale', function() 
         overrideValues($locale, externalLocale);
         localeCache.put(localeId, externalLocale);
 
-        $rootScope.$broadcast('$localeChangeSuccess', localeId, $locale);
         $rootScope.$apply(function () {
+          $rootScope.$broadcast('$localeChangeSuccess', localeId, $locale);
+          storage.put(storeKey, localeId);
           deferred.resolve($locale);
         });
       });
@@ -87,8 +91,22 @@ angular.module('tmh.dynamicLocale', []).provider('tmhDynamicLocale', function() 
     }
   };
 
-  this.$get = ['$rootScope', '$interpolate', '$locale', '$q', 'tmhDynamicLocaleCache', function($rootScope, interpolate, locale, $q, tmhDynamicLocaleCache) {
-    var localeLocation = interpolate(localeLocationPattern);
+  this.useStorage = function(storageName) {
+    storageFactory = storageName;
+  };
+
+  this.useCookieStorage = function() {
+    this.useStorage('$cookieStore');
+  };
+
+  this.$get = ['$rootScope', '$injector', '$interpolate', '$locale', '$q', 'tmhDynamicLocaleCache', function($rootScope, $injector, interpolate, locale, $q, tmhDynamicLocaleCache) {
+    var localeLocation = interpolate(localeLocationPattern),
+      storage = $injector.get(storageFactory),
+      initialLocale;
+
+    if (initialLocale = storage.get(storeKey)) {
+      loadLocale(localeLocation({locale: initialLocale}), locale, initialLocale, $rootScope, $q, tmhDynamicLocaleCache, storage);
+    }
 
     return {
       /**
@@ -99,7 +117,7 @@ angular.module('tmh.dynamicLocale', []).provider('tmhDynamicLocale', function() 
        *    instance with the information from the new locale
        */
       set: function(value) {
-        return loadLocale(localeLocation({locale: value}), locale, value, $rootScope, $q, tmhDynamicLocaleCache);
+        return loadLocale(localeLocation({locale: value}), locale, value, $rootScope, $q, tmhDynamicLocaleCache, storage);
       }
     };
   }];
@@ -107,5 +125,9 @@ angular.module('tmh.dynamicLocale', []).provider('tmhDynamicLocale', function() 
 }).provider('tmhDynamicLocaleCache', function() {
   this.$get = ['$cacheFactory', function($cacheFactory) {
     return $cacheFactory('tmh.dynamicLocales');
+  }];
+}).provider('tmhDynamicLocaleStorageCache', function() {
+  this.$get = ['$cacheFactory', function($cacheFactory) {
+    return $cacheFactory('tmh.dynamicLocales.store');
   }];
 });

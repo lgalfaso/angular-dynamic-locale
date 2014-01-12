@@ -100,7 +100,7 @@ describe('dynamicLocale', function() {
     });
   }));
 
-  it('should keep already loaded locales at tmhDynamicLocaleCache', inject(function($locale, tmhDynamicLocale, tmhDynamicLocaleCache, $rootScope, $compile) {
+  it('should keep already loaded locales at tmhDynamicLocaleCache', inject(function($locale, tmhDynamicLocale, tmhDynamicLocaleCache, $rootScope) {
     var esLocale = null;
 
     runs(function() {
@@ -127,7 +127,7 @@ describe('dynamicLocale', function() {
     });
   }));
 
-  it('should use the cache when possible', inject(function($locale, tmhDynamicLocale, tmhDynamicLocaleCache, $rootScope, $compile) {
+  it('should use the cache when possible', inject(function($locale, tmhDynamicLocale, tmhDynamicLocaleCache, $rootScope) {
     var callback = jasmine.createSpy();
 
     runs(function() {
@@ -155,5 +155,42 @@ describe('dynamicLocale', function() {
       expect(callback.calls.length).toBe(1);
     });
   }));
+
+  describe('having a cookie storage', function () {
+    beforeEach(module('ngCookies'));
+    beforeEach(module(function(tmhDynamicLocaleProvider) {
+      tmhDynamicLocaleProvider.useCookieStorage();
+    }));
+
+    it('should store the change on the cookie store', inject(function ($locale, $cookieStore, tmhDynamicLocale) {
+      runs(function() {
+        tmhDynamicLocale.set('es');
+        expect($cookieStore.get('tmhDynamicLocale.locale')).toBe(undefined);
+      });
+      waitsFor(function() {
+        return $locale.id === 'es';
+      }, 'locale not updated', 2000);
+      runs(function() {
+        expect($cookieStore.get('tmhDynamicLocale.locale')).toBe('es');
+      });
+    }));
+    describe('reading the locale at initialization', function () {
+      beforeEach(inject(function ($cookieStore) {
+        $cookieStore.put('tmhDynamicLocale.locale', 'it');
+      }));
+
+      it('should load the locale on initialization', inject(function ($locale, tmhDynamicLocale) {
+        runs(function() {
+          expect($locale.id).toBe('en-us');
+        });
+        waitsFor(function() {
+          return $locale.id === 'it';
+        }, 'locale not updated', 2000);
+        runs(function() {
+          expect($locale.id).toBe('it');
+        });
+      }));
+    });
+  });
 
 });
