@@ -34,6 +34,7 @@ describe('dynamicLocale', function() {
     var callback = jasmine.createSpy();
 
     runs(function() {
+      $rootScope.$apply();
       $rootScope.$on('$localeChangeSuccess', callback);
       tmhDynamicLocale.set('es');
       expect(callback.calls.length).toBe(0);
@@ -175,11 +176,12 @@ describe('dynamicLocale', function() {
       });
     }));
     describe('reading the locale at initialization', function () {
-      beforeEach(inject(function ($cookieStore) {
+      beforeEach(inject(function ($cookieStore, $rootScope) {
         $cookieStore.put('tmhDynamicLocale.locale', 'it');
+        $rootScope.$apply();
       }));
 
-      it('should load the locale on initialization', inject(function ($locale, tmhDynamicLocale) {
+      it('should load the locale on initialization', inject(function ($locale, $rootScope) {
         runs(function() {
           expect($locale.id).toBe('en-us');
         });
