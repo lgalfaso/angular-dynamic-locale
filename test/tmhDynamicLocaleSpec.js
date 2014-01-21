@@ -157,6 +157,24 @@ describe('dynamicLocale', function() {
     });
   }));
 
+  describe('having a default locale', function() {
+    beforeEach(module(function(tmhDynamicLocaleProvider) {
+      tmhDynamicLocaleProvider.defaultLocale('it');
+    }));
+    it('should set the locale to the default locale', inject(function($locale, $rootScope) {
+      runs(function() {
+        expect($locale.id).toBe('en-us');
+        $rootScope.$apply();
+      });
+      waitsFor(function() {
+        return $locale.id === 'it';
+      }, 'locale not updated', 2000);
+      runs(function() {
+        expect($locale.id).toBe('it');
+      });
+    }));
+  });
+
   describe('having a cookie storage', function () {
     beforeEach(module('ngCookies'));
     beforeEach(module(function(tmhDynamicLocaleProvider) {
@@ -193,6 +211,26 @@ describe('dynamicLocale', function() {
         });
       }));
     });
-  });
+    describe('and having a default language', function () {
+      beforeEach(module(function(tmhDynamicLocaleProvider) {
+        tmhDynamicLocaleProvider.defaultLocale('es');
+      }));
+      beforeEach(inject(function ($cookieStore, $rootScope) {
+        $cookieStore.put('tmhDynamicLocale.locale', 'it');
+        $rootScope.$apply();
+      }));
 
+      it('should load the locale on initialization', inject(function ($locale, $rootScope) {
+        runs(function() {
+          expect($locale.id).toBe('en-us');
+        });
+        waitsFor(function() {
+          return $locale.id === 'it';
+        }, 'locale not updated', 2000);
+        runs(function() {
+          expect($locale.id).toBe('it');
+        });
+      }));
+    });
+  });
 });

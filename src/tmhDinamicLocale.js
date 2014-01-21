@@ -1,7 +1,8 @@
 'use strict';
 angular.module('tmh.dynamicLocale', []).provider('tmhDynamicLocale', function() {
 
-  var localeLocationPattern = 'angular/i18n/angular-locale_{{locale}}.js',
+  var defaultLocale,
+    localeLocationPattern = 'angular/i18n/angular-locale_{{locale}}.js',
     storageFactory = 'tmhDynamicLocaleStorageCache',
     storage,
     storeKey = 'tmhDynamicLocale.locale';
@@ -99,13 +100,17 @@ angular.module('tmh.dynamicLocale', []).provider('tmhDynamicLocale', function() 
     this.useStorage('$cookieStore');
   };
 
+  this.defaultLocale = function (value) {
+    defaultLocale = value;
+  };
+
   this.$get = ['$rootScope', '$injector', '$interpolate', '$locale', '$q', 'tmhDynamicLocaleCache', function($rootScope, $injector, interpolate, locale, $q, tmhDynamicLocaleCache) {
     var localeLocation = interpolate(localeLocationPattern);
 
     storage = $injector.get(storageFactory);
     $rootScope.$evalAsync(function () {
       var initialLocale;
-      if (initialLocale = storage.get(storeKey)) {
+      if (initialLocale = (storage.get(storeKey) || defaultLocale)) {
         loadLocale(localeLocation({locale: initialLocale}), locale, initialLocale, $rootScope, $q, tmhDynamicLocaleCache);
       }
     });
