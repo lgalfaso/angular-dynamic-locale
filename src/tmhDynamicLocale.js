@@ -1,3 +1,4 @@
+( function(window) {
 'use strict';
 angular.module('tmh.dynamicLocale', []).provider('tmhDynamicLocale', function() {
 
@@ -123,4 +124,4 @@ angular.module('tmh.dynamicLocale', []).provider('tmhDynamicLocale', function() 
     return $cacheFactory('tmh.dynamicLocales.store');
   }];
 }).run(['tmhDynamicLocale', angular.noop]);
-
+}(window) );
