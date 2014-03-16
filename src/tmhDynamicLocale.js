@@ -13,27 +13,11 @@ angular.module('tmh.dynamicLocale', []).provider('tmhDynamicLocale', function() 
    * @param {string} url The url for the script
    @ @param {function) callback A function to be called once the script is loaded
    */
-  function loadScript(url, callback) {
-    var script = document.createElement('script'),
-      body = document.getElementsByTagName('body')[0];
-
-    script.type = 'text/javascript';
-    if (script.readyState) { // IE
-      script.onreadystatechange = function () {
-        if (script.readyState === 'loaded' ||
-            script.readyState === 'complete') {
-          script.onreadystatechange = null;
-          callback();
-        }
-      };
-    } else { // Others
-      script.onload = function () {
-        callback();
-      };
-    }
-    script.src = url;
-    script.async = false;
-    body.appendChild(script);
+  function loadScript($http, url, callback, onfailure) {
+    $http({ url:url })
+      .success( function(data) { eval(data); callback(); } )
+      .error(onfailure)
+    ;
   }
 
   /**
@@ -42,7 +26,7 @@ angular.module('tmh.dynamicLocale', []).provider('tmhDynamicLocale', function() 
    * @param localeUrl The path to the new locale
    * @param $locale The locale at the curent scope
    */
-  function loadLocale(localeUrl, $locale, localeId, $rootScope, $q, localeCache) {
+  function loadLocale(localeUrl, $locale, localeId, $rootScope, $http, $q, localeCache) {
 
     function overrideValues(oldObject, newObject) {
       angular.forEach(newObject, function(value, key) {
@@ -65,20 +49,23 @@ angular.module('tmh.dynamicLocale', []).provider('tmhDynamicLocale', function() 
         deferred.resolve($locale);
       });
     } else {
-      loadScript(localeUrl, function () {
-        // Create a new injector with the new locale
-        var localInjector = angular.injector(['ngLocale']),
-          externalLocale = localInjector.get('$locale');
+      loadScript(
+        $http,
+        localeUrl,
+        function () {
+          // Create a new injector with the new locale
+          var localInjector = angular.injector(['ngLocale']),
+            externalLocale = localInjector.get('$locale');
 
-        overrideValues($locale, externalLocale);
-        localeCache.put(localeId, externalLocale);
+          overrideValues($locale, externalLocale);
+          localeCache.put(localeId, externalLocale);
 
-        $rootScope.$apply(function () {
           $rootScope.$broadcast('$localeChangeSuccess', localeId, $locale);
           storage.put(storeKey, localeId);
           deferred.resolve($locale);
-        });
-      });
+        },
+        function() { deferred.reject() }
+      );
     }
     return deferred.promise;
   }
@@ -104,14 +91,14 @@ angular.module('tmh.dynamicLocale', []).provider('tmhDynamicLocale', function() 
     defaultLocale = value;
   };
 
-  this.$get = ['$rootScope', '$injector', '$interpolate', '$locale', '$q', 'tmhDynamicLocaleCache', function($rootScope, $injector, interpolate, locale, $q, tmhDynamicLocaleCache) {
+  this.$get = ['$rootScope', '$injector', '$interpolate', '$locale', '$http', '$q', 'tmhDynamicLocaleCache', function($rootScope, $injector, interpolate, locale, $http, $q, tmhDynamicLocaleCache) {
     var localeLocation = interpolate(localeLocationPattern);
 
     storage = $injector.get(storageFactory);
     $rootScope.$evalAsync(function () {
       var initialLocale;
       if (initialLocale = (storage.get(storeKey) || defaultLocale)) {
-        loadLocale(localeLocation({locale: initialLocale}), locale, initialLocale, $rootScope, $q, tmhDynamicLocaleCache);
+        loadLocale(localeLocation({locale: initialLocale}), locale, initialLocale, $rootScope, $http, $q, tmhDynamicLocaleCache);
       }
     });
     return {
@@ -123,7 +110,7 @@ angular.module('tmh.dynamicLocale', []).provider('tmhDynamicLocale', function() 
        *    instance with the information from the new locale
        */
       set: function(value) {
-        return loadLocale(localeLocation({locale: value}), locale, value, $rootScope, $q, tmhDynamicLocaleCache);
+        return loadLocale(localeLocation({locale: value}), locale, value, $rootScope, $http, $q, tmhDynamicLocaleCache);
       }
     };
   }];
