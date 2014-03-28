@@ -15,6 +15,24 @@ describe('dynamicLocale', function() {
     }, 'locale not reverted', 2000);
   }));
 
+  it('should only load the script on the page once', inject(function($locale, tmhDynamicLocale) {
+    
+    spyOn(document, 'createElement').andCallThrough();
+
+    runs(function() {
+      tmhDynamicLocale.set('es');
+      tmhDynamicLocale.set('es');
+    });
+
+    waitsFor(function() {
+      return $locale.id === 'es';
+    }, 'locale not updated', 2000);
+
+    runs(function() {
+      expect(document.createElement.callCount).toEqual(1);
+    });
+  }));
+
   it('should (eventually) be able to change the locale', inject(function($locale, tmhDynamicLocale) {
     runs(function() {
       tmhDynamicLocale.set('es');

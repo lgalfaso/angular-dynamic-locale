@@ -6,7 +6,8 @@ angular.module('tmh.dynamicLocale', []).provider('tmhDynamicLocale', function() 
     localeLocationPattern = 'angular/i18n/angular-locale_{{locale}}.js',
     storageFactory = 'tmhDynamicLocaleStorageCache',
     storage,
-    storeKey = 'tmhDynamicLocale.locale';
+    storeKey = 'tmhDynamicLocale.locale',
+    calledScripts = {};
 
   /**
    * Loads a script asynchronously
@@ -15,6 +16,14 @@ angular.module('tmh.dynamicLocale', []).provider('tmhDynamicLocale', function() 
    @ @param {function) callback A function to be called once the script is loaded
    */
   function loadScript(url, callback) {
+
+    if (calledScripts[url]) {
+      return callback();
+    }
+    else {
+      calledScripts[url] = true;
+    }
+
     var script = document.createElement('script'),
       body = document.getElementsByTagName('body')[0];
 
