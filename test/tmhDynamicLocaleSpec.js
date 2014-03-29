@@ -233,4 +233,77 @@ describe('dynamicLocale', function() {
       }));
     });
   });
+
+  describe('loading locales using <script>', function () {
+    function countLocales($document, localeId) {
+      var count = 0,
+        scripts = $document[0].getElementsByTagName('script');
+
+      for (var i = 0; i < scripts.length; ++i) {
+        count += (scripts[i].src === 'http://localhost:9876/base/components/angular-i18n/angular-locale_' + localeId + '.js' ? 1 : 0);
+      }
+      return count;
+    }
+
+    it('should load the locales using a <script> tag', inject(function (tmhDynamicLocale, $document, $locale) {
+      runs(function() {
+        tmhDynamicLocale.set('fr');
+      });
+
+      waitsFor(function() {
+        return $locale.id === 'fr';
+      }, 'locale not updated', 2000);
+
+      runs(function() {
+        expect(countLocales($document, 'fr')).toBe(1);
+      });
+    }));
+
+    it('should not load the same locale twice', inject(function (tmhDynamicLocale, $rootScope, $document, $locale) {
+      runs(function() {
+        tmhDynamicLocale.set('ja');
+        tmhDynamicLocale.set('ja');
+      });
+
+      waitsFor(function() {
+        return $locale.id === 'ja';
+      }, 'locale not updated', 2000);
+
+      runs(function() {
+        expect(countLocales($document, 'ja')).toBe(1);
+        tmhDynamicLocale.set('ja');
+        expect(countLocales($document, 'ja')).toBe(1);
+        tmhDynamicLocale.set('et');
+      });
+
+      waitsFor(function() {
+        return $locale.id === 'et';
+      }, 'locale not updated', 2000);
+
+      runs(function() {
+        $rootScope.$apply(function () {
+          tmhDynamicLocale.set('ja');
+        });
+        expect(countLocales($document, 'ja')).toBe(1);
+      });
+    }));
+
+    it('should return a promise that is resolved when the script is loaded', inject(function (tmhDynamicLocale, $document, $locale) {
+      var callback = jasmine.createSpy();
+
+      runs(function() {
+        tmhDynamicLocale.set('ko').then(callback);
+        tmhDynamicLocale.set('ko').then(callback);
+        expect(callback).not.toHaveBeenCalled();
+      });
+
+      waitsFor(function() {
+        return $locale.id === 'ko';
+      }, 'locale not updated', 2000);
+
+      runs(function() {
+        expect(callback.calls.length).toBe(2);
+      });
+    }));
+  });
 });

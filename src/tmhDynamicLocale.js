@@ -6,7 +6,9 @@ angular.module('tmh.dynamicLocale', []).provider('tmhDynamicLocale', function() 
     localeLocationPattern = 'angular/i18n/angular-locale_{{locale}}.js',
     storageFactory = 'tmhDynamicLocaleStorageCache',
     storage,
-    storeKey = 'tmhDynamicLocale.locale';
+    storeKey = 'tmhDynamicLocale.locale',
+    promiseCache = {},
+    activeLocale;
 
   /**
    * Loads a script asynchronously
@@ -21,8 +23,7 @@ angular.module('tmh.dynamicLocale', []).provider('tmhDynamicLocale', function() 
     script.type = 'text/javascript';
     if (script.readyState) { // IE
       script.onreadystatechange = function () {
-        if (script.readyState === 'loaded' ||
-            script.readyState === 'complete') {
+        if (script.readyState === 'complete') {
           script.onreadystatechange = null;
           callback();
         }
@@ -46,19 +47,27 @@ angular.module('tmh.dynamicLocale', []).provider('tmhDynamicLocale', function() 
   function loadLocale(localeUrl, $locale, localeId, $rootScope, $q, localeCache) {
 
     function overrideValues(oldObject, newObject) {
+      if (activeLocale !== localeId) {
+        return;
+      }
       angular.forEach(newObject, function(value, key) {
         if (angular.isArray(newObject[key]) || angular.isObject(newObject[key])) {
           overrideValues(oldObject[key], newObject[key]);
-        } else { 
+        } else {
           oldObject[key] = newObject[key];
-        } 
+        }
       });
-    } 
+    }
 
 
-    var cachedLocale = localeCache.get(localeId),
+    if (promiseCache[localeId]) return promiseCache[localeId];
+
+    var cachedLocale,
       deferred = $q.defer();
-    if (cachedLocale) {
+    if (localeId === activeLocale) {
+      deferred.resolve($locale);
+    } else if (cachedLocale = localeCache.get(localeId)) {
+      activeLocale = localeId;
       $rootScope.$evalAsync(function() {
         overrideValues($locale, cachedLocale);
         $rootScope.$broadcast('$localeChangeSuccess', localeId, $locale);
@@ -66,6 +75,8 @@ angular.module('tmh.dynamicLocale', []).provider('tmhDynamicLocale', function() 
         deferred.resolve($locale);
       });
     } else {
+      activeLocale = localeId;
+      promiseCache[localeId] = deferred.promise;
       loadScript(localeUrl, function () {
         // Create a new injector with the new locale
         var localInjector = angular.injector(['ngLocale']),
@@ -73,6 +84,7 @@ angular.module('tmh.dynamicLocale', []).provider('tmhDynamicLocale', function() 
 
         overrideValues($locale, externalLocale);
         localeCache.put(localeId, externalLocale);
+        delete promiseCache[localeId];
 
         $rootScope.$apply(function () {
           $rootScope.$broadcast('$localeChangeSuccess', localeId, $locale);
