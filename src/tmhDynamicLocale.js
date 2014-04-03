@@ -16,7 +16,7 @@ angular.module('tmh.dynamicLocale', []).provider('tmhDynamicLocale', function() 
    * @param {string} url The url for the script
    @ @param {function) callback A function to be called once the script is loaded
    */
-  function loadScript(url, callback) {
+  function loadScript(url, callback, $timeout) {
     var script = document.createElement('script'),
       body = document.getElementsByTagName('body')[0];
 
