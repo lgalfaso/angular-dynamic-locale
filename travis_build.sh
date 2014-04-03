@@ -13,8 +13,5 @@ trap "warn SIGINT" SIGINT
 trap "warn SIGTERM" SIGTERM
 trap "warn SIGHUP" SIGHUP
 
-npm install -g grunt-cli bower
-bower install
-
 grunt karma:travis
 
