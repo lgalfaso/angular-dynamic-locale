@@ -18,6 +18,10 @@
     "karma-phantomjs-launcher": "0.1.2",
     "karma-jasmine": "0.1.5"
   },
+  "scripts": {
+      "test": "grunt karma:travis",
+      "postinstall": "bower install"
+  },
   "repository": {
     "type": "git",
     "url": "git://github.com/lgalfaso/angular-dynamic-locale.git"
