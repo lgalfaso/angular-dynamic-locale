@@ -23,7 +23,7 @@ angular.module('tmh.dynamicLocale', []).provider('tmhDynamicLocale', function() 
     script.type = 'text/javascript';
     if (script.readyState) { // IE
       script.onreadystatechange = function () {
-        if (script.readyState === 'complete') {
+        if (script.readyState === 'complete' || script.readyState === 'loaded') {
           script.onreadystatechange = null;
           callback();
         }
