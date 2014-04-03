@@ -7,21 +7,23 @@
       tmhDynamicLocaleProvider.localeLocationPattern('/base/components/angular-i18n/angular-locale_{{locale}}.js');
     }));
 
-    afterEach(inject(function($locale, tmhDynamicLocale) {
+    afterEach(inject(function($locale, $timeout, tmhDynamicLocale) {
       runs(function() {
         tmhDynamicLocale.set('en-us');
       });
       waitsFor(function() {
+        $timeout.flush(50);
         return $locale.id === 'en-us';
       }, 'locale not reverted', 2000);
     }));
 
-    it('should (eventually) be able to change the locale', inject(function($locale, tmhDynamicLocale) {
+    it('should (eventually) be able to change the locale', inject(function($locale, $timeout, tmhDynamicLocale) {
       runs(function() {
         tmhDynamicLocale.set('es');
       });
 
       waitsFor(function() {
+        $timeout.flush(50);
         return $locale.id === 'es';
       }, 'locale not updated', 2000);
 
@@ -31,7 +33,7 @@
       });
     }));
 
-    it('should trigger an even when there it changes the locale', inject(function($locale, tmhDynamicLocale, $rootScope) {
+    it('should trigger an even when there it changes the locale', inject(function($timeout, $locale, tmhDynamicLocale, $rootScope) {
       var callback = jasmine.createSpy();
 
       runs(function() {
@@ -41,6 +43,7 @@
         expect(callback.calls.length).toBe(0);
       });
       waitsFor(function() {
+        $timeout.flush(50);
         return $locale.id === 'es';
       }, 'locale not updated', 2000);
       runs(function() {
@@ -50,7 +53,7 @@
       });
     }));
 
-    it('should return a promise that has the new locale', inject(function($locale, tmhDynamicLocale, $rootScope) {
+    it('should return a promise that has the new locale', inject(function($timeout, $locale, tmhDynamicLocale, $rootScope) {
       var result = null;
       runs(function() {
         tmhDynamicLocale.set('es').then(function(newLocale) {
@@ -59,6 +62,7 @@
         expect(result).toBe(null);
       });
       waitsFor(function() {
+        $timeout.flush(50);
         return result !== null;
       }, 'locale not updated', 2000);
       runs(function() {
@@ -68,6 +72,7 @@
         tmhDynamicLocale.set('it');
       });
       waitsFor(function() {
+        $timeout.flush(50);
         return $locale.id === 'it';
       }, 'locale not updated', 2000);
       runs(function() {
@@ -82,7 +87,7 @@
       });
     }));
 
-    it('should change the already formatted numbers in the page', inject(function($locale, tmhDynamicLocale, $rootScope, $compile) {
+    it('should change the already formatted numbers in the page', inject(function($timeout, $locale, tmhDynamicLocale, $rootScope, $compile) {
       var element = null;
 
       runs(function() {
@@ -95,6 +100,7 @@
         tmhDynamicLocale.set('es');
       });
       waitsFor(function() {
+        $timeout.flush(50);
         return $locale.id === 'es';
       }, 'locale not updated', 2000);
       runs(function() {
@@ -102,7 +108,7 @@
       });
     }));
 
-    it('should keep already loaded locales at tmhDynamicLocaleCache', inject(function($locale, tmhDynamicLocale, tmhDynamicLocaleCache, $rootScope) {
+    it('should keep already loaded locales at tmhDynamicLocaleCache', inject(function($timeout, $locale, tmhDynamicLocale, tmhDynamicLocaleCache, $rootScope) {
       var esLocale = null;
 
       runs(function() {
@@ -111,6 +117,7 @@
         expect(tmhDynamicLocaleCache.info().size).toBe(0);
       });
       waitsFor(function() {
+        $timeout.flush(50);
         return $locale.id === 'es';
       }, 'locale not updated', 2000);
       runs(function() {
@@ -120,6 +127,7 @@
         tmhDynamicLocale.set('it');
       });
       waitsFor(function() {
+        $timeout.flush(50);
         return $locale.id === 'it';
       }, 'locale not updated', 2000);
       runs(function() {
@@ -129,19 +137,21 @@
       });
     }));
 
-    it('should use the cache when possible', inject(function($locale, tmhDynamicLocale, tmhDynamicLocaleCache, $rootScope) {
+    it('should use the cache when possible', inject(function($timeout, $locale, tmhDynamicLocale, tmhDynamicLocaleCache, $rootScope) {
       var callback = jasmine.createSpy();
 
       runs(function() {
         tmhDynamicLocale.set('es');
       });
       waitsFor(function() {
+        $timeout.flush(50);
         return $locale.id === 'es';
       }, 'locale not updated', 2000);
       runs(function() {
         tmhDynamicLocale.set('it');
       });
       waitsFor(function() {
+        $timeout.flush(50);
         return $locale.id === 'it';
       }, 'locale not updated', 2000);
       runs(function() {
@@ -162,12 +172,13 @@
       beforeEach(module(function(tmhDynamicLocaleProvider) {
         tmhDynamicLocaleProvider.defaultLocale('it');
       }));
-      it('should set the locale to the default locale', inject(function($locale, $rootScope) {
+      it('should set the locale to the default locale', inject(function($timeout, $locale, $rootScope) {
         runs(function() {
           expect($locale.id).toBe('en-us');
           $rootScope.$apply();
         });
         waitsFor(function() {
+          $timeout.flush(50);
           return $locale.id === 'it';
         }, 'locale not updated', 2000);
         runs(function() {
@@ -182,12 +193,13 @@
         tmhDynamicLocaleProvider.useCookieStorage();
       }));
 
-      it('should store the change on the cookie store', inject(function ($locale, $cookieStore, tmhDynamicLocale) {
+      it('should store the change on the cookie store', inject(function ($timeout, $locale, $cookieStore, tmhDynamicLocale) {
         runs(function() {
           tmhDynamicLocale.set('es');
           expect($cookieStore.get('tmhDynamicLocale.locale')).toBe(undefined);
         });
         waitsFor(function() {
+          $timeout.flush(50);
           return $locale.id === 'es';
         }, 'locale not updated', 2000);
         runs(function() {
@@ -200,11 +212,12 @@
           $rootScope.$apply();
         }));
 
-        it('should load the locale on initialization', inject(function ($locale, $rootScope) {
+        it('should load the locale on initialization', inject(function ($timeout, $locale, $rootScope) {
           runs(function() {
             expect($locale.id).toBe('en-us');
           });
           waitsFor(function() {
+            $timeout.flush(50);
             return $locale.id === 'it';
           }, 'locale not updated', 2000);
           runs(function() {
@@ -221,11 +234,12 @@
           $rootScope.$apply();
         }));
 
-        it('should load the locale on initialization', inject(function ($locale, $rootScope) {
+        it('should load the locale on initialization', inject(function ($timeout, $locale, $rootScope) {
           runs(function() {
             expect($locale.id).toBe('en-us');
           });
           waitsFor(function() {
+            $timeout.flush(50);
             return $locale.id === 'it';
           }, 'locale not updated', 2000);
           runs(function() {
@@ -246,12 +260,13 @@
         return count;
       }
 
-      it('should load the locales using a <script> tag', inject(function (tmhDynamicLocale, $document, $locale) {
+      it('should load the locales using a <script> tag', inject(function ($timeout, tmhDynamicLocale, $document, $locale) {
         runs(function() {
           tmhDynamicLocale.set('fr');
         });
 
         waitsFor(function() {
+          $timeout.flush(50);
           return $locale.id === 'fr';
         }, 'locale not updated', 2000);
 
@@ -260,13 +275,14 @@
         });
       }));
 
-      it('should not load the same locale twice', inject(function (tmhDynamicLocale, $rootScope, $document, $locale) {
+      it('should not load the same locale twice', inject(function ($timeout, tmhDynamicLocale, $rootScope, $document, $locale) {
         runs(function() {
           tmhDynamicLocale.set('ja');
           tmhDynamicLocale.set('ja');
         });
 
         waitsFor(function() {
+          $timeout.flush(50);
           return $locale.id === 'ja';
         }, 'locale not updated', 2000);
 
@@ -278,6 +294,7 @@
         });
 
         waitsFor(function() {
+          $timeout.flush(50);
           return $locale.id === 'et';
         }, 'locale not updated', 2000);
 
@@ -289,7 +306,7 @@
         });
       }));
 
-      it('should return a promise that is resolved when the script is loaded', inject(function (tmhDynamicLocale, $document, $locale) {
+      it('should return a promise that is resolved when the script is loaded', inject(function ($timeout, tmhDynamicLocale, $document, $locale) {
         var callback = jasmine.createSpy();
 
         runs(function() {
@@ -299,6 +316,7 @@
         });
 
         waitsFor(function() {
+          $timeout.flush(50);
           return $locale.id === 'ko';
         }, 'locale not updated', 2000);
 

@@ -91,8 +91,8 @@ angular.module('tmh.dynamicLocale', []).provider('tmhDynamicLocale', function() 
           $rootScope.$broadcast('$localeChangeSuccess', localeId, $locale);
           storage.put(storeKey, localeId);
           deferred.resolve($locale);
-        }, $timeout);
-      });
+        });
+      }, $timeout);
     }
     return deferred.promise;
   }
