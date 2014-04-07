@@ -26,7 +26,7 @@ angular.module('tmh.dynamicLocale', []).provider('tmhDynamicLocale', function() 
         if (script.readyState === 'complete' ||
             script.readyState === 'loaded') {
           script.onreadystatechange = null;
-          $timeout(callback, 30, false);
+          callback();
         }
       };
     } else { // Others
