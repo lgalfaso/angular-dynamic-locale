@@ -28,10 +28,12 @@
         }
       },
       bump: {
-        files: ['package.json', 'bower.json'],
-        commitFiles: ['package.json', 'bower.json'],
-        tagName: '%VERSION%',
-        pushTo: 'origin'
+        options: {
+          files: ['package.json', 'bower.json'],
+          commitFiles: ['package.json', 'bower.json'],
+          tagName: '%VERSION%',
+          pushTo: 'origin'
+        }
       },
       'npm-publish': {
          options: {
