@@ -40,6 +40,7 @@
          }
       }
     });
+    grunt.registerTask('release', ['jshint', 'karma:unit', 'bump', 'publish']);
   };
 }());
 
