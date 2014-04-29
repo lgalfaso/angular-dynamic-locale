@@ -53,6 +53,9 @@ angular.module('tmh.dynamicLocale', []).provider('tmhDynamicLocale', function() 
       }
       angular.forEach(newObject, function(value, key) {
         if (angular.isArray(newObject[key]) || angular.isObject(newObject[key])) {
+          if (!oldObject[key]) {
+            oldObject[key] = angular.isArray(newObject[key]) ? [] : {};
+          }
           overrideValues(oldObject[key], newObject[key]);
         } else {
           oldObject[key] = newObject[key];
