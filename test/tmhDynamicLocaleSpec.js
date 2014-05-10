@@ -378,4 +378,28 @@
       }));
     });
   });
+
+  describe('using custom locales', function () {
+    beforeEach(module('tmh.dynamicLocale'));
+
+    beforeEach(module(function (tmhDynamicLocaleProvider) {
+      tmhDynamicLocaleProvider.localeLocationPattern('/base/test/mock/{{locale}}.js');
+    }));
+
+    it('should create new keys when extending old locale from new one', inject(function($locale, $timeout, tmhDynamicLocale) {
+      runs(function() {
+        tmhDynamicLocale.set('custom');
+      });
+
+      waitsFor(function() {
+        $timeout.flush(50);
+        return $locale.id === 'custom';
+      }, 'locale not updated', 2000);
+
+      runs(function() {
+        expect($locale.id).toBe('custom');
+        expect($locale.TEMPERATURE.TEMPERATURE_NAME).toBe("Celsius");
+      });
+    }));
+  });
 }());
