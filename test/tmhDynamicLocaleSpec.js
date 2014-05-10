@@ -33,7 +33,7 @@
       });
     }));
 
-    it('should trigger an even when there it changes the locale', inject(function($timeout, $locale, tmhDynamicLocale, $rootScope) {
+    it('should trigger an event when there it changes the locale', inject(function($timeout, $locale, tmhDynamicLocale, $rootScope) {
       var callback = jasmine.createSpy();
 
       runs(function() {
