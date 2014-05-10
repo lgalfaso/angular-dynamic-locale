@@ -51,8 +51,18 @@ angular.module('tmh.dynamicLocale', []).provider('tmhDynamicLocale', function() 
       if (activeLocale !== localeId) {
         return;
       }
+      angular.forEach(oldObject, function(value, key) {
+        if (!newObject[key]) {
+          delete oldObject[key];
+        } else if (angular.isArray(newObject[key])) {
+          oldObject[key].length = newObject[key].length;
+        }
+      });
       angular.forEach(newObject, function(value, key) {
         if (angular.isArray(newObject[key]) || angular.isObject(newObject[key])) {
+          if (!oldObject[key]) {
+            oldObject[key] = angular.isArray(newObject[key]) ? [] : {};
+          }
           overrideValues(oldObject[key], newObject[key]);
         } else {
           oldObject[key] = newObject[key];

@@ -168,6 +168,58 @@
       });
     }));
 
+    it('should do a deep copy of the locale elements', inject(function($timeout, $locale, tmhDynamicLocale, tmhDynamicLocaleCache, $rootScope) {
+      runs(function() {
+        tmhDynamicLocale.set('es');
+      });
+      waitsFor(function() {
+        $timeout.flush(50);
+        return $locale.id === 'es';
+      }, 'locale not updated', 2000);
+      runs(function() {
+        $locale.DATETIME_FORMATS.DAY["0"] = "XXX";
+        expect($locale.DATETIME_FORMATS.DAY["0"]).not.toBe(tmhDynamicLocaleCache.get('es').DATETIME_FORMATS.DAY["0"]);
+      });
+    }));
+
+    it('should be able to handle locales with extra elements',  inject(function($timeout, $locale, tmhDynamicLocale, tmhDynamicLocaleCache, $rootScope) {
+      var weirdLocale;
+      runs(function() {
+        tmhDynamicLocale.set('es');
+      });
+      waitsFor(function() {
+        $timeout.flush(50);
+        return $locale.id === 'es';
+      }, 'locale not updated', 2000);
+      runs(function() {
+        weirdLocale = angular.copy($locale);
+        weirdLocale.id = "xx";
+        weirdLocale.EXTRA_PARAMETER = {foo: "FOO"};
+        weirdLocale.DATETIME_FORMATS.DAY["7"] = "One More Day";
+        tmhDynamicLocaleCache.put('xx', angular.copy(weirdLocale));
+        tmhDynamicLocale.set('xx');
+      });
+      waitsFor(function() {
+        $timeout.flush(50);
+        return $locale.id === 'xx';
+      }, 'locale not updated', 2000);
+      runs(function() {
+        expect($locale).toEqual(weirdLocale);
+        expect($locale.EXTRA_PARAMETER).toEqual({foo: "FOO"});
+        tmhDynamicLocale.set('es');
+      });
+      waitsFor(function() {
+        $timeout.flush(50);
+        return $locale.id === 'es';
+      }, 'locale not updated', 2000);
+      runs(function() {
+        expect($locale.EXTRA_PARAMETER).toBeUndefined();
+        expect($locale.DATETIME_FORMATS.DAY["7"]).toBeUndefined();
+        expect($locale.DATETIME_FORMATS.DAY.length).toBe(7);
+      });
+    }));
+
+
     describe('having a default locale', function() {
       beforeEach(module(function(tmhDynamicLocaleProvider) {
         tmhDynamicLocaleProvider.defaultLocale('it');
