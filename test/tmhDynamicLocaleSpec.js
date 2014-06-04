@@ -315,6 +315,7 @@
       it('should load the locales using a <script> tag', inject(function ($timeout, tmhDynamicLocale, $document, $locale) {
         runs(function() {
           tmhDynamicLocale.set('fr');
+          expect(countLocales($document, 'fr')).toBe(1);
         });
 
         waitsFor(function() {
@@ -323,7 +324,7 @@
         }, 'locale not updated', 2000);
 
         runs(function() {
-          expect(countLocales($document, 'fr')).toBe(1);
+          expect(countLocales($document, 'fr')).toBe(0);
         });
       }));
 
@@ -331,6 +332,7 @@
         runs(function() {
           tmhDynamicLocale.set('ja');
           tmhDynamicLocale.set('ja');
+          expect(countLocales($document, 'ja')).toBe(1);
         });
 
         waitsFor(function() {
@@ -339,9 +341,9 @@
         }, 'locale not updated', 2000);
 
         runs(function() {
-          expect(countLocales($document, 'ja')).toBe(1);
+          expect(countLocales($document, 'ja')).toBe(0);
           tmhDynamicLocale.set('ja');
-          expect(countLocales($document, 'ja')).toBe(1);
+          expect(countLocales($document, 'ja')).toBe(0);
           tmhDynamicLocale.set('et');
         });
 
@@ -353,8 +355,9 @@
         runs(function() {
           $rootScope.$apply(function () {
             tmhDynamicLocale.set('ja');
+            expect(countLocales($document, 'ja')).toBe(0);
           });
-          expect(countLocales($document, 'ja')).toBe(1);
+          expect(countLocales($document, 'ja')).toBe(0);
         });
       }));
 
