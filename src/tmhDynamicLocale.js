@@ -26,7 +26,6 @@ angular.module('tmh.dynamicLocale', []).provider('tmhDynamicLocale', function() 
         if (script.readyState === 'complete' ||
             script.readyState === 'loaded') {
           script.onreadystatechange = null;
-          body.removeChild(script);
           $timeout(
             function () {
               body.removeChild(script);
