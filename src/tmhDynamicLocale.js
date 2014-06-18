@@ -48,7 +48,7 @@ angular.module('tmh.dynamicLocale', []).provider('tmhDynamicLocale', function() 
         removed = true;
         body.removeChild(script);
         errorCallback();
-      }
+      };
     }
     script.src = url;
     script.async = false;
