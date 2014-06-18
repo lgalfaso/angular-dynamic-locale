@@ -16,9 +16,10 @@ angular.module('tmh.dynamicLocale', []).provider('tmhDynamicLocale', function() 
    * @param {string} url The url for the script
    @ @param {function) callback A function to be called once the script is loaded
    */
-  function loadScript(url, callback, $timeout) {
+  function loadScript(url, callback, errorCallback, $timeout) {
     var script = document.createElement('script'),
-      body = document.getElementsByTagName('body')[0];
+      body = document.getElementsByTagName('body')[0],
+      removed = false;
 
     script.type = 'text/javascript';
     if (script.readyState) { // IE
@@ -28,6 +29,8 @@ angular.module('tmh.dynamicLocale', []).provider('tmhDynamicLocale', function() 
           script.onreadystatechange = null;
           $timeout(
             function () {
+              if (removed) return;
+              removed = true;
               body.removeChild(script);
               callback();
             }, 30, false);
@@ -35,9 +38,17 @@ angular.module('tmh.dynamicLocale', []).provider('tmhDynamicLocale', function() 
       };
     } else { // Others
       script.onload = function () {
+        if (removed) return;
+        removed = true;
         body.removeChild(script);
         callback();
       };
+      script.onerror = function () {
+        if (removed) return;
+        removed = true;
+        body.removeChild(script);
+        errorCallback();
+      }
     }
     script.src = url;
     script.async = false;
@@ -106,6 +117,13 @@ angular.module('tmh.dynamicLocale', []).provider('tmhDynamicLocale', function() 
           $rootScope.$broadcast('$localeChangeSuccess', localeId, $locale);
           storage.put(storeKey, localeId);
           deferred.resolve($locale);
+        });
+      }, function () {
+        delete promiseCache[localeId];
+
+        $rootScope.$apply(function () {
+          $rootScope.$broadcast('$localeChangeError', localeId);
+          deferred.reject(localeId);
         });
       }, $timeout);
     }

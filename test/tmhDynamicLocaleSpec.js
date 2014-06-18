@@ -53,21 +53,38 @@
       });
     }));
 
-    it('should return a promise that has the new locale', inject(function($timeout, $locale, tmhDynamicLocale, $rootScope) {
-      var result = null;
+    it('should trigger a failure even when the locale change fail', inject(function($timeout, $locale, tmhDynamicLocale, $rootScope) {
+      var callback = jasmine.createSpy();
+
       runs(function() {
-        tmhDynamicLocale.set('es').then(function(newLocale) {
-          result = newLocale;
-        });
-        expect(result).toBe(null);
+        $rootScope.$apply();
+        $rootScope.$on('$localeChangeError', callback);
+        tmhDynamicLocale.set('invalidLocale');
+        expect(callback.calls.length).toBe(0);
       });
       waitsFor(function() {
         $timeout.flush(50);
-        return result !== null;
+        return callback.calls.length !== 0;
+      }, 'error not generated', 2000);
+      runs(function() {
+        expect(callback.calls.length).toBe(1);
+        expect(callback.calls[0].args[1]).toEqual('invalidLocale');
+      });
+    }));
+
+    it('should return a promise that has the new locale', inject(function($timeout, $locale, tmhDynamicLocale, $rootScope) {
+      var callback = jasmine.createSpy();
+      runs(function() {
+        tmhDynamicLocale.set('es').then(callback);
+        expect(callback.calls.length).toBe(0);
+      });
+      waitsFor(function() {
+        $timeout.flush(50);
+        return callback.calls.length !== 0;
       }, 'locale not updated', 2000);
       runs(function() {
-        expect(result.id).toEqual('es');
-        expect(result).toEqual($locale);
+        expect(callback.calls[0].args[0].id).toEqual('es');
+        expect(callback.calls[0].args[0]).toEqual($locale);
 
         tmhDynamicLocale.set('it');
       });
@@ -76,14 +93,30 @@
         return $locale.id === 'it';
       }, 'locale not updated', 2000);
       runs(function() {
-        result = null;
-        tmhDynamicLocale.set('es').then(function(newLocale) {
-          result = newLocale;
-        });
-        expect(result).toBe(null);
+        tmhDynamicLocale.set('es').then(callback);
+        expect(callback.calls.length).toBe(1);
         $rootScope.$apply();
-        expect(result.id).toBe('es');
-        expect(result).toBe($locale);
+        expect(callback.calls.length).toBe(2);
+        expect(callback.calls[1].args[0].id).toBe('es');
+        expect(callback.calls[1].args[0]).toBe($locale);
+      });
+    }));
+
+    it('should reject the returned promise if it fails to load the locale', inject(function($timeout, $locale, tmhDynamicLocale, $rootScope) {
+      var callback = jasmine.createSpy(),
+        errorCallback = jasmine.createSpy();
+      runs(function() {
+        tmhDynamicLocale.set('invalidLocale').then(callback, errorCallback);
+      });
+      waitsFor(function() {
+        $timeout.flush(50);
+        return errorCallback.calls.length;
+      }, 'promise not rejected', 2000);
+      runs(function() {
+        expect(callback.calls.length).toBe(0);
+        expect(errorCallback.calls.length).toBe(1);
+        expect(errorCallback.calls[0].args[0]).toBe('invalidLocale');
+        expect($locale.id).toBe('en-us');
       });
     }));
 
