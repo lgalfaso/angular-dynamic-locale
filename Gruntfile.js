@@ -53,7 +53,7 @@
          }
       }
     });
-    grunt.registerTask('release', ['jshint', 'karma:unit', 'uglify:all', 'karma:unit-min', 'bump', 'publish']);
+    grunt.registerTask('release', ['jshint', 'karma:unit', 'uglify:all', 'karma:unit.min', 'bump', 'publish']);
   };
 }());
 
