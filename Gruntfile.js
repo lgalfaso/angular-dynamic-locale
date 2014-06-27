@@ -35,6 +35,9 @@
         all: {
           files: {
             'tmhDynamicLocale.min.js': ['src/*.js']
+          },
+          options: {
+            sourceMap: true
           }
         }
       },
