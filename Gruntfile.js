@@ -9,6 +9,7 @@
     grunt.loadNpmTasks('grunt-karma');
     grunt.loadNpmTasks('grunt-bump');
     grunt.loadNpmTasks('grunt-npm');
+    grunt.loadNpmTasks('grunt-contrib-uglify');
 
     grunt.initConfig({
       jshint: {
@@ -16,6 +17,9 @@
       },
       karma: {
         unit: { configFile: 'karma.conf.js' },
+        'unit.min': {
+          configFile: 'karma.min.conf.js'
+        },
         autotest: {
           configFile: 'karma.conf.js',
           autoWatch: true,
@@ -25,6 +29,13 @@
           configFile: 'karma.conf.js',
           reporters: 'dots',
           browsers: ['PhantomJS']
+        }
+      },
+      uglify: {
+        all: {
+          files: {
+            'tmhDynamicLocale.min.js': ['src/*.js']
+          }
         }
       },
       bump: {
@@ -42,7 +53,7 @@
          }
       }
     });
-    grunt.registerTask('release', ['jshint', 'karma:unit', 'bump', 'publish']);
+    grunt.registerTask('release', ['jshint', 'karma:unit', 'uglify:all', 'karma:unit-min', 'bump', 'publish']);
   };
 }());
 
