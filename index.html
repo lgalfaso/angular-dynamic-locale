@@ -1,0 +1,64 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Angular Dynamic Locale</title>
+    <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.20/angular.js"></script>
+    <script src="src/tmhDynamicLocale.js"></script>
+    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+    <script src="app.js"></script>
+  </head>
+
+  <body data-ng-app="DynamicLocaleExample" data-ng-controller="ExampleCtrl">
+    <div class="jumbotron">
+      <div class="container">
+        <h1>Angular Dynamic Locale</h1>
+        <p>A library to change the locale at runtime. It changes the underlying <code>$locale</code> object, so changing the locale will change the formatting of all elements that use <code>$locale</code></p>
+        <p>
+          <a href="https://raw.githubusercontent.com/lgalfaso/angular-dynamic-locale/master/src/tmhDynamicLocale.js" class="btn btn-primary btn-lg">
+            <i class="glyphicon glyphicon-download"></i>&nbsp;&nbsp;Download
+          </a>
+          <a href="https://github.com/lgalfaso/angular-dynamic-locale" class="btn btn-default btn-lg">
+            <i class="glyphicon glyphicon-share"></i>&nbsp;&nbsp;View on GitHub
+          </a>
+        </p>
+      </div>
+    </div>
+
+    <div class="container">
+      <h4>What is this?</h4>
+      <p>This angular module makes it possible to programmatically change the current locale.</p>
+    </div>
+
+    <div class="container">
+      <h4>How do I use it?</h4>
+      <p>Install it via npm or bower</p>
+      <pre>$ npm install angular-dynamic-locale
+$ bower install angular-dynamic-locale</pre>
+
+      <p>To use, simply include it as a dependency in your app and you're done!</p>
+      <pre>angular.module('myApp', ['tmh.dynamicLocale'])</pre>
+    </div>
+
+    <div class="container">
+      <h4>Example</h4>
+      <p>Pick a locale <select ng-model="model.selectedLocale" ng-options="key as value for (key, value) in availableLocales"></select></p>
+      <p>Selected locale id: {{model.selectedLocale}}</p>
+      <p>Current locale id: {{$locale.id}}</p>
+      <p>A big number: {{1234567890 | number}}</p>
+      <p>The Epoch was on: {{0 | date}}</p>
+      <p>One million of the local currency: {{1000000 | currency}}</p>
+    </div>
+  </body>
+
+  <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-51584205-2', 'auto');
+  ga('send', 'pageview');
+
+  </script>
+
+</html>
