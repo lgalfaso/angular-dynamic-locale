@@ -13,8 +13,6 @@ angular.module('DynamicLocaleExample', ['tmh.dynamicLocale'])
       'zh': 'Chinese'};
     $rootScope.model = {selectedLocale: 'en'};
     $rootScope.$locale = $locale;
-    $rootScope.$watch('model.selectedLocale', function(newValue) {
-      tmhDynamicLocale.set(newValue); 
-    });
+    $rootScope.changeLocale = tmhDynamicLocale.set;
   });
 

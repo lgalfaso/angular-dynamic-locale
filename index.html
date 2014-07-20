@@ -41,7 +41,7 @@ $ bower install angular-dynamic-locale</pre>
 
     <div class="container">
       <h4>Example</h4>
-      <p>Pick a locale <select ng-model="model.selectedLocale" ng-options="key as value for (key, value) in availableLocales"></select></p>
+      <p>Pick a locale <select ng-model="model.selectedLocale" ng-options="key as value for (key, value) in availableLocales" ng-change="changeLocale(model.selectedLocale)"></select></p>
       <p>Selected locale id: {{model.selectedLocale}}</p>
       <p>Current locale id: {{$locale.id}}</p>
       <p>A big number: {{1234567890 | number}}</p>
