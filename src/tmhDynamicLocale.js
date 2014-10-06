@@ -1,6 +1,16 @@
 ( function(window) {
 'use strict';
-angular.module('tmh.dynamicLocale', []).provider('tmhDynamicLocale', function() {
+angular.module('tmh.dynamicLocale', []).config(['$provide', function ($provide) {
+  function makeStateful($delegate) {
+    $delegate.$stateful = true;
+    return $delegate;
+  }
+
+  $provide.decorator('dateFilter', ['$delegate', makeStateful]);
+  $provide.decorator('numberFilter', ['$delegate', makeStateful]);
+  $provide.decorator('currencyFilter', ['$delegate', makeStateful]);
+
+}]).provider('tmhDynamicLocale', function() {
 
   var defaultLocale,
     localeLocationPattern = 'angular/i18n/angular-locale_{{locale}}.js',
