@@ -120,6 +120,42 @@
       });
     }));
 
+    it('should be possible to retrieve the locale to be', inject(function($timeout, $locale, tmhDynamicLocale, $rootScope, $compile) {
+      runs(function() {
+        tmhDynamicLocale.set('es');
+        expect(tmhDynamicLocale.get()).toBe('es');
+      });
+      waitsFor(function() {
+        $timeout.flush(50);
+        return $locale.id === 'es';
+      }, 'locale not updated', 2000);
+      runs(function() {
+        expect(tmhDynamicLocale.get()).toBe('es');
+      });
+    }));
+
+    it('should revert the configured locale when the new locale does not exist', inject(function($timeout, $locale, tmhDynamicLocale, $rootScope) {
+      var errorCallback = jasmine.createSpy();
+      runs(function() {
+        tmhDynamicLocale.set('es');
+      }); 
+      waitsFor(function() {
+        $timeout.flush(50);
+        return $locale.id === 'es';
+      }, 'locale not updated', 2000);
+      runs(function() {
+        tmhDynamicLocale.set('invalidLocale').then(undefined, errorCallback);
+        expect(tmhDynamicLocale.get()).toBe('invalidLocale');
+      });
+      waitsFor(function() {
+        $timeout.flush(50);
+        return errorCallback.calls.length;
+      }, 'promise not rejected', 2000);
+      runs(function() {
+        expect(tmhDynamicLocale.get()).toBe('es');
+      });
+    }));
+
     it('should change the already formatted numbers in the page', inject(function($timeout, $locale, tmhDynamicLocale, $rootScope, $compile) {
       var element = null;
 

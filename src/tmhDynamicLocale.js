@@ -132,6 +132,7 @@ angular.module('tmh.dynamicLocale', []).config(['$provide', function ($provide) 
         delete promiseCache[localeId];
 
         $rootScope.$apply(function () {
+          if (activeLocale === localeId) activeLocale = $locale.id;
           $rootScope.$broadcast('$localeChangeError', localeId);
           deferred.reject(localeId);
         });
@@ -181,6 +182,13 @@ angular.module('tmh.dynamicLocale', []).config(['$provide', function ($provide) 
        */
       set: function(value) {
         return loadLocale(localeLocation({locale: value}), locale, value, $rootScope, $q, tmhDynamicLocaleCache, $timeout);
+      },
+      /**
+       * @ngdoc method
+       * @description Returns the configured locale
+       */
+      get: function() {
+        return activeLocale;
       }
     };
   }];
