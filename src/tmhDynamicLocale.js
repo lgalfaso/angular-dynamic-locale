@@ -1,4 +1,4 @@
-( function(window) {
+(function(window) {
 'use strict';
 angular.module('tmh.dynamicLocale', []).config(['$provide', function ($provide) {
   function makeStateful($delegate) {
@@ -201,4 +201,4 @@ angular.module('tmh.dynamicLocale', []).config(['$provide', function ($provide) 
     return $cacheFactory('tmh.dynamicLocales.store');
   }];
 }).run(['tmhDynamicLocale', angular.noop]);
-}(window) );
+}(window));

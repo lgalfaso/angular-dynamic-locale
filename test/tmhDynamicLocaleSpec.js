@@ -141,7 +141,7 @@
       inject(function($timeout, $locale, tmhDynamicLocale, $rootScope) {
         var job = createAsync(done);
         var callback = jasmine.createSpy();
-        
+
         job
           .runs(function() {
             tmhDynamicLocale.set('es').then(callback);
@@ -154,7 +154,6 @@
           .runs(function() {
             expect(callback.calls.argsFor(0)[0].id).toEqual('es');
             expect(callback.calls.argsFor(0)[0]).toEqual($locale);
-  
             tmhDynamicLocale.set('it');
           })
           .waitsFor(function() {
