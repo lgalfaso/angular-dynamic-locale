@@ -520,6 +520,34 @@
           });
         });
       });
+      describe('and changing the name of the storageKey', function () {
+        beforeEach(module(function(tmhDynamicLocaleProvider) {
+          tmhDynamicLocaleProvider.storageKey('customStorageKeyName');
+        }));
+
+        it('should change the name of the storageKey', function(done) {
+          inject(function ($timeout, $locale, $cookieStore, tmhDynamicLocale) {
+            var job = createAsync(done);
+
+            job
+            .runs(function() {
+              tmhDynamicLocale.set('es');
+              expect($cookieStore.get('customStorageKeyName')).toBe(undefined);
+              expect($cookieStore.get('tmhDynamicLocale.locale')).toBe(undefined);
+            })
+            .waitsFor(function() {
+              $timeout.flush(50);
+              return $locale.id === 'es';
+            }, 'locale not updated', 2000)
+            .runs(function() {
+              expect($cookieStore.get('tmhDynamicLocale.locale')).toBe(undefined);
+              expect($cookieStore.get('customStorageKeyName')).toBe('es');
+            })
+            .done();
+            job.start();
+          });
+        });
+      });
     });
 
     describe('loading locales using <script>', function () {
