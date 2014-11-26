@@ -10,24 +10,17 @@ angular.module('tmh.dynamicLocale', []).config(['$provide', function ($provide) 
   $provide.decorator('numberFilter', ['$delegate', makeStateful]);
   $provide.decorator('currencyFilter', ['$delegate', makeStateful]);
 
-}]).constant('$STORAGE_KEY', 'tmhDynamicLocale.locale')
-.provider('tmhDynamicLocale', ['$STORAGE_KEY' , function($STORAGE_KEY) {
+}])
+.constant('tmhDynamicLocale.STORAGE_KEY', 'tmhDynamicLocale.locale')
+.provider('tmhDynamicLocale', ['tmhDynamicLocale.STORAGE_KEY', function(STORAGE_KEY) {
 
   var defaultLocale,
     localeLocationPattern = 'angular/i18n/angular-locale_{{locale}}.js',
     storageFactory = 'tmhDynamicLocaleStorageCache',
     storage,
-    $storageKey = $STORAGE_KEY,
+    storageKey = STORAGE_KEY,
     promiseCache = {},
     activeLocale;
-
-  var storageKey = function (key) {
-    if (!key) {
-      return $storageKey;
-    }
-    $storageKey = key;
-  };
-  this.storageKey = storageKey;
 
   /**
    * Loads a script asynchronously
@@ -117,7 +110,7 @@ angular.module('tmh.dynamicLocale', []).config(['$provide', function ($provide) 
       $rootScope.$evalAsync(function() {
         overrideValues($locale, cachedLocale);
         $rootScope.$broadcast('$localeChangeSuccess', localeId, $locale);
-        storage.put($storageKey, localeId);
+        storage.put(storageKey, localeId);
         deferred.resolve($locale);
       });
     } else {
@@ -134,7 +127,7 @@ angular.module('tmh.dynamicLocale', []).config(['$provide', function ($provide) 
 
         $rootScope.$apply(function () {
           $rootScope.$broadcast('$localeChangeSuccess', localeId, $locale);
-          storage.put($storageKey, localeId);
+          storage.put(storageKey, localeId);
           deferred.resolve($locale);
         });
       }, function () {
@@ -171,13 +164,22 @@ angular.module('tmh.dynamicLocale', []).config(['$provide', function ($provide) 
     defaultLocale = value;
   };
 
+  this.storageKey = function (value) {
+    if (value) {
+      storageKey = value;
+      return this;
+    } else {
+      return storageKey;
+    }
+  };
+
   this.$get = ['$rootScope', '$injector', '$interpolate', '$locale', '$q', 'tmhDynamicLocaleCache', '$timeout', function($rootScope, $injector, interpolate, locale, $q, tmhDynamicLocaleCache, $timeout) {
     var localeLocation = interpolate(localeLocationPattern);
 
     storage = $injector.get(storageFactory);
     $rootScope.$evalAsync(function () {
       var initialLocale;
-      if ((initialLocale = (storage.get($storageKey) || defaultLocale))) {
+      if ((initialLocale = (storage.get(storageKey) || defaultLocale))) {
         loadLocale(localeLocation({locale: initialLocale}), locale, initialLocale, $rootScope, $q, tmhDynamicLocaleCache, $timeout);
       }
     });
