@@ -71,8 +71,7 @@
         options: {
           files: ['package.json', 'bower.json'],
           commitFiles: ['package.json', 'bower.json'],
-          tagName: '%VERSION%',
-          pushTo: 'origin'
+          tagName: '%VERSION%'
         }
       },
       'npm-publish': {
