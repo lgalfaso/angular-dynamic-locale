@@ -57,7 +57,9 @@ angular.module('tmh.dynamicLocale', []).config(['$provide', function($provide) {
             function () {
               if (removed) return;
               removed = true;
-              body.removeChild(script);
+              if (script.parentNode === body) {
+                body.removeChild(script);
+              }
               callback();
             }, 30, false);
         }
@@ -66,13 +68,17 @@ angular.module('tmh.dynamicLocale', []).config(['$provide', function($provide) {
       script.onload = function () {
         if (removed) return;
         removed = true;
-        body.removeChild(script);
+        if (script.parentNode === body) {
+          body.removeChild(script);
+        }
         callback();
       };
       script.onerror = function () {
         if (removed) return;
         removed = true;
-        body.removeChild(script);
+        if (script.parentNode === body) {
+          body.removeChild(script);
+        }
         errorCallback();
       };
     }
