@@ -68,7 +68,7 @@
     });
 
     it('should (eventually) be able to change the locale', function(done) {
-      inject(function($rootScope, $locale, $timeout, tmhDynamicLocale) {
+      inject(function($locale, $timeout, tmhDynamicLocale) {
         var job = createAsync(done);
         job
           .runs(function() {
