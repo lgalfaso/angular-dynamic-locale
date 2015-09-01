@@ -226,7 +226,7 @@ angular.module('tmh.dynamicLocale', []).config(['$provide', function($provide) {
     };
 
     function loadLocaleFn(localeId) {
-      return loadLocale(localeLocation({locale: localeId}), locale, localeId, $rootScope, $q, tmhDynamicLocaleCache, $timeout);
+      return loadLocale(localeLocation({locale: localeId, angularVersion: angular.version.full}), locale, localeId, $rootScope, $q, tmhDynamicLocaleCache, $timeout);
     }
   }];
 }]).provider('tmhDynamicLocaleCache', function() {
