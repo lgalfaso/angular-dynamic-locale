@@ -68,11 +68,35 @@
     });
 
     it('should (eventually) be able to change the locale', function(done) {
-      inject(function($locale, $timeout, tmhDynamicLocale) {
+      inject(function($rootScope, $locale, $timeout, tmhDynamicLocale) {
         var job = createAsync(done);
         job
           .runs(function() {
             tmhDynamicLocale.set('es');
+          })
+          .waitsFor(function() {
+            $timeout.flush(50);
+            return $locale.id === 'es';
+          }, 'locale not updated', 2000)
+          .runs(function() {
+            expect($locale.id).toBe('es');
+            expect($locale.DATETIME_FORMATS.DAY["0"]).toBe("domingo");
+          })
+          .done();
+        job.start();
+      });
+    });
+
+    it('should be able to change the locale back-and-forward within one digest', function(done) {
+      inject(function($rootScope, $locale, $timeout, tmhDynamicLocale) {
+        var job = createAsync(done);
+        job
+          .runs(function() {
+            $rootScope.$apply(function() {
+              tmhDynamicLocale.set('es');
+              tmhDynamicLocale.set('en');
+              tmhDynamicLocale.set('es');
+            });
           })
           .waitsFor(function() {
             $timeout.flush(50);

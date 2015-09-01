@@ -118,7 +118,10 @@ angular.module('tmh.dynamicLocale', []).config(['$provide', function($provide) {
     }
 
 
-    if (promiseCache[localeId]) return promiseCache[localeId];
+    if (promiseCache[localeId]) {
+      activeLocale = localeId;
+      return promiseCache[localeId];
+    }
 
     var cachedLocale,
       deferred = $q.defer();
