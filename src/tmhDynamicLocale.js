@@ -77,7 +77,7 @@ angular.module('tmh.dynamicLocale', []).config(['$provide', function($provide) {
       };
     }
     script.src = url;
-    script.async = false;
+    script.async = true;
     body.appendChild(script);
   }
 
