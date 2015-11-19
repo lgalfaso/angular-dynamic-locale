@@ -147,7 +147,7 @@ angular.module('tmh.dynamicLocale', []).config(['$provide', function($provide) {
         localeCache.put(localeId, externalLocale);
         delete promiseCache[localeId];
 
-        $rootScope.$apply(function() {
+        $rootScope.$applyAsync(function() {
           storage.put(storageKey, localeId);
           $rootScope.$broadcast('$localeChangeSuccess', localeId, $locale);
           deferred.resolve($locale);
@@ -155,7 +155,7 @@ angular.module('tmh.dynamicLocale', []).config(['$provide', function($provide) {
       }, function() {
         delete promiseCache[localeId];
 
-        $rootScope.$apply(function() {
+        $rootScope.$applyAsync(function() {
           if (activeLocale === localeId) {
             activeLocale = $locale.id;
           }
