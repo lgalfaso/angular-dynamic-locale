@@ -609,7 +609,7 @@
         module(function(tmhDynamicLocaleProvider) {
           tmhDynamicLocaleProvider.appendScriptTo(document.head);
         });
-        
+
         inject(function ($timeout, tmhDynamicLocale, $document, $locale) {
           var job = createAsync(done);
           job
