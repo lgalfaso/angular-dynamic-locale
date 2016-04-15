@@ -1,5 +1,5 @@
 /**
- * Angular Dynamic Locale - 0.1.30
+ * Angular Dynamic Locale - 0.1.32
  * https://github.com/lgalfaso/angular-dynamic-locale
  * License: MIT
  */
@@ -40,7 +40,8 @@ angular.module('tmh.dynamicLocale', []).config(['$provide', function($provide) {
     storage,
     storageKey = STORAGE_KEY,
     promiseCache = {},
-    activeLocale;
+    activeLocale,
+    extraProperties = {};
 
   /**
    * Loads a script asynchronously
@@ -207,6 +208,10 @@ angular.module('tmh.dynamicLocale', []).config(['$provide', function($provide) {
     }
   };
 
+  this.addLocalePatternValue = function(key, value) {
+    extraProperties[key] = value;
+  };
+
   this.$get = ['$rootScope', '$injector', '$interpolate', '$locale', '$q', 'tmhDynamicLocaleCache', '$timeout', function($rootScope, $injector, interpolate, locale, $q, tmhDynamicLocaleCache, $timeout) {
     var localeLocation = interpolate(localeLocationPattern);
 
@@ -236,7 +241,8 @@ angular.module('tmh.dynamicLocale', []).config(['$provide', function($provide) {
     };
 
     function loadLocaleFn(localeId) {
-      return loadLocale(localeLocation({locale: localeId, angularVersion: angular.version.full}), locale, localeId, $rootScope, $q, tmhDynamicLocaleCache, $timeout);
+      var baseProperties = {locale: localeId, angularVersion: angular.version.full};
+      return loadLocale(localeLocation(angular.extend({}, extraProperties, baseProperties)), locale, localeId, $rootScope, $q, tmhDynamicLocaleCache, $timeout);
     }
   }];
 }]).provider('tmhDynamicLocaleCache', function() {
