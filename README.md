@@ -45,6 +45,8 @@ It is possible to ask the storage to be `$cookieStore` using the shortcut
 `tmhDynamicLocaleProvider.useCookieStorage()`, internally this is
 exactly as performing `tmhDynamicLocaleProvider.useStorage('$cookieStore')`
 
+Also it is possible to set a default language using `tmhDynamicLocaleProvider.defaultLocale(locale)`.
+
 ## Installation
 
 Using npm:
@@ -85,6 +87,15 @@ Also, here's an example of how you may optionally override the default path (`an
 angular.module('myApp', ['tmh.dynamicLocale'])
   .config(function(tmhDynamicLocaleProvider) {
     tmhDynamicLocaleProvider.localeLocationPattern('/base/node_modules/angular-i18n/angular-locale_{{locale}}.js');
+  });
+```
+
+Lastly, if you need to set a default locale, you can do it like this:
+
+```javascript
+angular.module('myApp', ['tmh.dynamicLocale'])
+  .config(function(tmhDynamicLocaleProvider) {
+    tmhDynamicLocaleProvider.defaultLocale('en');
   });
 ```
 
