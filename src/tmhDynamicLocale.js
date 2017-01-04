@@ -208,7 +208,7 @@ angular.module('tmh.dynamicLocale', []).config(['$provide', function($provide) {
   };
 
   this.$get = ['$rootScope', '$injector', '$interpolate', '$locale', '$q', 'tmhDynamicLocaleCache', '$timeout', function($rootScope, $injector, interpolate, locale, $q, tmhDynamicLocaleCache, $timeout) {
-    var localeLocation = interpolate(localeLocationPattern);
+    var localeLocation = angular.isFunction(localeLocationPattern) ? localeLocationPattern : interpolate(localeLocationPattern);
 
     storage = $injector.get(storageFactory);
     $rootScope.$evalAsync(function() {
