@@ -32,5 +32,8 @@
   "repository": {
     "type": "git",
     "url": "git://github.com/lgalfaso/angular-dynamic-locale.git"
+  },
+  "dependencies": {
+    "@types/angular": "^1.6.25"
   }
 }
