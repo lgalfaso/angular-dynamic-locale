@@ -33,6 +33,7 @@
     "type": "git",
     "url": "git://github.com/lgalfaso/angular-dynamic-locale.git"
   },
+  "types": "./src/tmhDynamicLocale.d.ts",
   "dependencies": {
     "@types/angular": "^1.6.25"
   }
