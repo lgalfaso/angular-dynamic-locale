@@ -1,5 +1,5 @@
 /**
- * Angular Dynamic Locale - 0.1.32
+ * Angular Dynamic Locale - 0.1.33
  * https://github.com/lgalfaso/angular-dynamic-locale
  * License: MIT
  */
