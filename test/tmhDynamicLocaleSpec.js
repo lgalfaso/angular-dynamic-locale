@@ -471,7 +471,7 @@
 
       it('should store the change in $cookieStore', function(done) {
         inject(function ($timeout, $locale, $cookieStore, tmhDynamicLocale) {
-          $cookieStore.remove('tmhDynamicLocale.locale')
+          $cookieStore.remove('tmhDynamicLocale.locale');
           var job = createAsync(done);
 
           job
@@ -492,7 +492,7 @@
       });
       it('should store the change in $cookies', function(done) {
         inject(function ($timeout, $locale, $cookies, tmhDynamicLocale) {
-          $cookies.remove('tmhDynamicLocale.locale')
+          $cookies.remove('tmhDynamicLocale.locale');
           var job = createAsync(done);
 
           job
@@ -573,8 +573,8 @@
 
         it('should change the name of the storageKey', function(done) {
           inject(function ($timeout, $locale, $cookieStore, tmhDynamicLocale) {
-            $cookieStore.remove('tmhDynamicLocale.locale')
-            $cookieStore.remove('customStorageKeyName')
+            $cookieStore.remove('tmhDynamicLocale.locale');
+            $cookieStore.remove('customStorageKeyName');
             var job = createAsync(done);
 
             job
