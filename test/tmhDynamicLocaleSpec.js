@@ -469,8 +469,9 @@
         tmhDynamicLocaleProvider.useCookieStorage();
       }));
 
-      it('should store the change on the cookie store', function(done) {
+      it('should store the change in $cookieStore', function(done) {
         inject(function ($timeout, $locale, $cookieStore, tmhDynamicLocale) {
+          $cookieStore.remove('tmhDynamicLocale.locale')
           var job = createAsync(done);
 
           job
@@ -484,6 +485,27 @@
             }, 'locale not updated', 2000)
             .runs(function() {
               expect($cookieStore.get('tmhDynamicLocale.locale')).toBe('es');
+            })
+            .done();
+          job.start();
+        });
+      });
+      it('should store the change in $cookies', function(done) {
+        inject(function ($timeout, $locale, $cookies, tmhDynamicLocale) {
+          $cookies.remove('tmhDynamicLocale.locale')
+          var job = createAsync(done);
+
+          job
+            .runs(function() {
+              tmhDynamicLocale.set('es');
+              expect($cookies.getObject('tmhDynamicLocale.locale')).toBe(undefined);
+            })
+            .waitsFor(function() {
+              $timeout.flush(50);
+              return $locale.id === 'es';
+            }, 'locale not updated', 2000)
+            .runs(function() {
+              expect($cookies.getObject('tmhDynamicLocale.locale')).toBe('es');
             })
             .done();
           job.start();
@@ -551,6 +573,8 @@
 
         it('should change the name of the storageKey', function(done) {
           inject(function ($timeout, $locale, $cookieStore, tmhDynamicLocale) {
+            $cookieStore.remove('tmhDynamicLocale.locale')
+            $cookieStore.remove('customStorageKeyName')
             var job = createAsync(done);
 
             job
