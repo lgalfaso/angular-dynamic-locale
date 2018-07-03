@@ -1,5 +1,5 @@
 /**
- * Angular Dynamic Locale - 0.1.36
+ * Angular Dynamic Locale - 0.1.37
  * https://github.com/lgalfaso/angular-dynamic-locale
  * License: MIT
  */
@@ -66,7 +66,9 @@ angular.module('tmh.dynamicLocale', []).config(['$provide', function($provide) {
             function () {
               if (removed) return;
               removed = true;
-              element.removeChild(script);
+              if (script.parentNode === element) {
+                element.removeChild(script);
+              }
               callback();
             }, 30, false);
         }
@@ -75,13 +77,17 @@ angular.module('tmh.dynamicLocale', []).config(['$provide', function($provide) {
       script.onload = function () {
         if (removed) return;
         removed = true;
-        element.removeChild(script);
+        if (script.parentNode === element) {
+          element.removeChild(script);
+        }
         callback();
       };
       script.onerror = function () {
         if (removed) return;
         removed = true;
-        element.removeChild(script);
+        if (script.parentNode === element) {
+          element.removeChild(script);
+        }
         errorCallback();
       };
     }
