@@ -4,6 +4,8 @@ module.exports = function(config) {
     singleRun: true,
     logLevel: config.LOG_INFO,
     logColors: true,
+    browserDisconnectTimeout: 10000,
+    browserNoActivityTimeout: 10000,
     browsers: ['Chrome'],
     files: [
       'node_modules/angular/angular.js',

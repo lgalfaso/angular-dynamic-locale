@@ -5,6 +5,8 @@ module.exports = function(config) {
     logLevel: config.LOG_INFO,
     logColors: true,
     browsers: ['Chrome'],
+    browserDisconnectTimeout: 10000,
+    browserNoActivityTimeout: 10000,
     files: [
       'node_modules/angular/angular.js',
       'node_modules/angular-cookies/angular-cookies.js',
