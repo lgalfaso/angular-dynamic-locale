@@ -14,7 +14,8 @@
   }
 }(this, function () {
 'use strict';
-angular.module('tmh.dynamicLocale', []).config(['$provide', function($provide) {
+angular.module('tmh.dynamicLocale', []).config(['$provide','$qProvider', function($provide,$qProvider) {
+	 $qProvider.errorOnUnhandledRejections(false);
   function makeStateful($delegate) {
     $delegate.$stateful = true;
     return $delegate;
