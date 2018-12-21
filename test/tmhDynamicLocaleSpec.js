@@ -1,3 +1,5 @@
+/* global describe:false, beforeEach:false, afterEach:false, inject:false,
+          it:false, inject:false, expect:false, jasmine:false */
 (function () {
   'use strict';
 
@@ -80,7 +82,7 @@
           }, 'locale not updated', 2000)
           .runs(function() {
             expect($locale.id).toBe('es');
-            expect($locale.DATETIME_FORMATS.DAY["0"]).toBe("domingo");
+            expect($locale.DATETIME_FORMATS.DAY['0']).toBe('domingo');
           })
           .done();
         job.start();
@@ -104,7 +106,7 @@
           }, 'locale not updated', 2000)
           .runs(function() {
             expect($locale.id).toBe('es');
-            expect($locale.DATETIME_FORMATS.DAY["0"]).toBe("domingo");
+            expect($locale.DATETIME_FORMATS.DAY['0']).toBe('domingo');
           })
           .done();
         job.start();
@@ -143,10 +145,10 @@
 
         job
           .runs(function() {
-             $rootScope.$apply();
-             $rootScope.$on('$localeChangeError', callback);
-             tmhDynamicLocale.set('invalidLocale');
-             expect(callback.calls.count()).toBe(0);
+            $rootScope.$apply();
+            $rootScope.$on('$localeChangeError', callback);
+            tmhDynamicLocale.set('invalidLocale');
+            expect(callback.calls.count()).toBe(0);
           })
           .waitsFor(function() {
             $timeout.flush(50);
@@ -198,7 +200,7 @@
     });
 
     it('should reject the returned promise if it fails to load the locale', function(done) {
-      inject(function($timeout, $locale, tmhDynamicLocale, $rootScope) {
+      inject(function($timeout, $locale, tmhDynamicLocale) {
         var callback = jasmine.createSpy();
         var errorCallback = jasmine.createSpy();
         var job = createAsync(done);
@@ -223,7 +225,7 @@
     });
 
     it('should be possible to retrieve the locale to be', function(done) {
-      inject(function($timeout, $locale, tmhDynamicLocale, $rootScope, $compile) {
+      inject(function($timeout, $locale, tmhDynamicLocale) {
         var job = createAsync(done);
 
         job
@@ -244,7 +246,7 @@
     });
 
     it('should revert the configured locale when the new locale does not exist', function(done) {
-      inject(function($timeout, $locale, tmhDynamicLocale, $rootScope) {
+      inject(function($timeout, $locale, tmhDynamicLocale) {
         var job = createAsync(done);
         var errorCallback = jasmine.createSpy();
 
@@ -300,9 +302,8 @@
     });
 
     it('should keep already loaded locales at tmhDynamicLocaleCache', function(done) {
-      inject(function($timeout, $locale, tmhDynamicLocale, tmhDynamicLocaleCache, $rootScope) {
+      inject(function($timeout, $locale, tmhDynamicLocale, tmhDynamicLocaleCache) {
         var job = createAsync(done);
-        var callback = jasmine.createSpy();
         var esLocale = null;
 
         job
@@ -356,7 +357,7 @@
             return $locale.id === 'it';
           }, 'locale not updated', 2000)
           .runs(function() {
-            tmhDynamicLocaleCache.get('es').DATETIME_FORMATS.DAY["0"] = "Domingo";
+            tmhDynamicLocaleCache.get('es').DATETIME_FORMATS.DAY['0'] = 'Domingo';
             $rootScope.$on('$localeChangeSuccess', callback);
             tmhDynamicLocale.set('es');
             // Changing the locale should be done async even when this is done from the cache
@@ -364,7 +365,7 @@
             expect($locale.id).toBe('it');
             $rootScope.$apply();
             expect($locale.id).toBe('es');
-            expect($locale.DATETIME_FORMATS.DAY["0"]).toBe("Domingo");
+            expect($locale.DATETIME_FORMATS.DAY['0']).toBe('Domingo');
             expect(callback.calls.count()).toBe(1);
           })
           .done();
@@ -373,7 +374,7 @@
     });
 
     it('should do a deep copy of the locale elements', function(done) {
-      inject(function($timeout, $locale, tmhDynamicLocale, tmhDynamicLocaleCache, $rootScope) {
+      inject(function($timeout, $locale, tmhDynamicLocale, tmhDynamicLocaleCache) {
         var job = createAsync(done);
 
         job
@@ -385,16 +386,16 @@
             return $locale.id === 'es';
           }, 'locale not updated', 2000)
           .runs(function() {
-            $locale.DATETIME_FORMATS.DAY["0"] = "XXX";
-            expect($locale.DATETIME_FORMATS.DAY["0"]).not.toBe(tmhDynamicLocaleCache.get('es').DATETIME_FORMATS.DAY["0"]);
+            $locale.DATETIME_FORMATS.DAY['0'] = 'XXX';
+            expect($locale.DATETIME_FORMATS.DAY['0']).not.toBe(tmhDynamicLocaleCache.get('es').DATETIME_FORMATS.DAY['0']);
           })
           .done();
         job.start();
       });
-     });
+    });
 
     it('should be able to handle locales with extra elements', function(done) {
-      inject(function($timeout, $locale, tmhDynamicLocale, tmhDynamicLocaleCache, $rootScope) {
+      inject(function($timeout, $locale, tmhDynamicLocale, tmhDynamicLocaleCache) {
         var job = createAsync(done);
         var weirdLocale;
 
@@ -408,9 +409,9 @@
           }, 'locale not updated', 2000)
           .runs(function() {
             weirdLocale = angular.copy($locale);
-            weirdLocale.id = "xx";
-            weirdLocale.EXTRA_PARAMETER = {foo: "FOO"};
-            weirdLocale.DATETIME_FORMATS.DAY["7"] = "One More Day";
+            weirdLocale.id = 'xx';
+            weirdLocale.EXTRA_PARAMETER = {foo: 'FOO'};
+            weirdLocale.DATETIME_FORMATS.DAY['7'] = 'One More Day';
             tmhDynamicLocaleCache.put('xx', angular.copy(weirdLocale));
             tmhDynamicLocale.set('xx');
           })
@@ -420,7 +421,7 @@
           }, 'locale not updated', 2000)
           .runs(function() {
             expect($locale).toEqual(weirdLocale);
-            expect($locale.EXTRA_PARAMETER).toEqual({foo: "FOO"});
+            expect($locale.EXTRA_PARAMETER).toEqual({foo: 'FOO'});
             tmhDynamicLocale.set('es');
           })
           .waitsFor(function() {
@@ -429,7 +430,7 @@
           }, 'locale not updated', 2000)
           .runs(function() {
             expect($locale.EXTRA_PARAMETER).toBeUndefined();
-            expect($locale.DATETIME_FORMATS.DAY["7"]).toBeUndefined();
+            expect($locale.DATETIME_FORMATS.DAY['7']).toBeUndefined();
             expect($locale.DATETIME_FORMATS.DAY.length).toBe(7);
           })
           .done();
@@ -518,7 +519,7 @@
         }));
 
         it('should load the locale on initialization', function(done) {
-          inject(function ($timeout, $locale, $rootScope) {
+          inject(function ($timeout, $locale) {
             var job = createAsync(done);
 
             job
@@ -547,7 +548,7 @@
         }));
 
         it('should load the locale on initialization', function(done) {
-          inject(function ($timeout, $locale, $rootScope) {
+          inject(function ($timeout, $locale) {
             var job = createAsync(done);
 
             job
@@ -578,20 +579,20 @@
             var job = createAsync(done);
 
             job
-            .runs(function() {
-              tmhDynamicLocale.set('es');
-              expect($cookieStore.get('customStorageKeyName')).toBe(undefined);
-              expect($cookieStore.get('tmhDynamicLocale.locale')).toBe(undefined);
-            })
-            .waitsFor(function() {
-              $timeout.flush(50);
-              return $locale.id === 'es';
-            }, 'locale not updated', 2000)
-            .runs(function() {
-              expect($cookieStore.get('tmhDynamicLocale.locale')).toBe(undefined);
-              expect($cookieStore.get('customStorageKeyName')).toBe('es');
-            })
-            .done();
+              .runs(function() {
+                tmhDynamicLocale.set('es');
+                expect($cookieStore.get('customStorageKeyName')).toBe(undefined);
+                expect($cookieStore.get('tmhDynamicLocale.locale')).toBe(undefined);
+              })
+              .waitsFor(function() {
+                $timeout.flush(50);
+                return $locale.id === 'es';
+              }, 'locale not updated', 2000)
+              .runs(function() {
+                expect($cookieStore.get('tmhDynamicLocale.locale')).toBe(undefined);
+                expect($cookieStore.get('customStorageKeyName')).toBe('es');
+              })
+              .done();
             job.start();
           });
         });
@@ -625,7 +626,7 @@
               expect(countLocales($document[0].body, 'fr')).toBe(0);
             })
             .done();
-        job.start();
+          job.start();
         });
       });
 
@@ -634,13 +635,13 @@
           tmhDynamicLocaleProvider.appendScriptTo(document.head);
         });
 
-        inject(function ($timeout, tmhDynamicLocale, $document, $locale) {
+        inject(function ($timeout, tmhDynamicLocale, $document) {
           var job = createAsync(done);
           job
-          .runs(function() {
-            tmhDynamicLocale.set('fr');
-            expect(countLocales($document[0].head, 'fr')).toBe(1);
-          }).done();
+            .runs(function() {
+              tmhDynamicLocale.set('fr');
+              expect(countLocales($document[0].head, 'fr')).toBe(1);
+            }).done();
           job.start();
         });
       });
@@ -722,7 +723,7 @@
           }, 'locale not updated', 2000)
           .runs(function() {
             expect($locale.id).toBe('es');
-            expect($locale.DATETIME_FORMATS.DAY["0"]).toBe("domingo");
+            expect($locale.DATETIME_FORMATS.DAY['0']).toBe('domingo');
           })
           .done();
         job.start();

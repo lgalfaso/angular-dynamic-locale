@@ -13,7 +13,7 @@
     grunt.loadNpmTasks('grunt-contrib-clean');
     grunt.loadNpmTasks('grunt-contrib-copy');
     grunt.loadNpmTasks('grunt-contrib-jshint');
-    grunt.loadNpmTasks('grunt-jscs');
+    grunt.loadNpmTasks('grunt-eslint');
     grunt.loadNpmTasks('grunt-karma');
     grunt.loadNpmTasks('grunt-bump');
     grunt.loadNpmTasks('grunt-npm');
@@ -25,11 +25,8 @@
       jshint: {
         all: ['Gruntfile.js', 'src/*.js', 'test/*.js']
       },
-      jscs: {
-        src: ['src/**/*.js', 'test/**/*.js'],
-        options: {
-          config: ".jscs.json"
-        }
+      eslint: {
+        target: ['src/**/*.js', 'test/**/*.js'],
       },
       karma: {
         unit: { configFile: 'karma.conf.js' },
@@ -82,7 +79,7 @@
          }
       }
     });
-    grunt.registerTask('release', ['jshint', 'jscs', 'karma:unit', 'concat', 'uglify:all', 'karma:unit.min', 'publish']);
+    grunt.registerTask('release', ['jshint', 'eslint', 'karma:unit', 'concat', 'uglify:all', 'karma:unit.min', 'publish']);
   };
 }());
 
