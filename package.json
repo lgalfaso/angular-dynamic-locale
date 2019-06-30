@@ -4,10 +4,10 @@
   "description": "A minimal module that adds the ability to dynamically change the locale",
   "license": "MIT",
   "devDependencies": {
-    "angular": "1.6.0",
-    "angular-cookies": "1.4.0",
-    "angular-i18n": "1.4.0",
-    "angular-mocks": "1.4.0",
+    "angular": "1.7.8",
+    "angular-cookies": "1.7.8",
+    "angular-i18n": "1.7.8",
+    "angular-mocks": "1.7.8",
     "eslint": "^5.16.0",
     "eslint-config-google": "^0.11.0",
     "grunt": "^1.0.4",
@@ -15,13 +15,13 @@
     "grunt-contrib-clean": "^2.0.0",
     "grunt-contrib-concat": "^1.0.1",
     "grunt-contrib-copy": "^1.0.0",
-    "grunt-contrib-jshint": "^2.0.0",
-    "grunt-contrib-uglify": "^4.0.0",
+    "grunt-contrib-jshint": "^2.1.0",
+    "grunt-contrib-uglify": "^4.0.1",
     "grunt-contrib-watch": "^1.1.0",
-    "grunt-eslint": "^21.0.0",
-    "grunt-karma": "^3.0.1",
+    "grunt-eslint": "^21.1.0",
+    "grunt-karma": "^3.0.2",
     "grunt-npm": "0.0.2",
-    "jasmine-core": "^3.3.0",
+    "jasmine-core": "^3.4.0",
     "karma": "^4.1.0",
     "karma-chrome-launcher": "^2.2.0",
     "karma-firefox-launcher": "^1.1.0",
@@ -38,6 +38,6 @@
   },
   "types": "./src/tmhDynamicLocale.d.ts",
   "dependencies": {
-    "@types/angular": "^1.6.52"
+    "@types/angular": "^1.6.54"
   }
 }

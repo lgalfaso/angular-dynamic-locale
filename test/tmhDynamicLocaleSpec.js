@@ -147,7 +147,7 @@
           .runs(function() {
             $rootScope.$apply();
             $rootScope.$on('$localeChangeError', callback);
-            tmhDynamicLocale.set('invalidLocale');
+            tmhDynamicLocale.set('invalidLocale').catch(function() {});
             expect(callback.calls.count()).toBe(0);
           })
           .waitsFor(function() {
@@ -470,27 +470,29 @@
         tmhDynamicLocaleProvider.useCookieStorage();
       }));
 
-      it('should store the change in $cookieStore', function(done) {
-        inject(function ($timeout, $locale, $cookieStore, tmhDynamicLocale) {
-          $cookieStore.remove('tmhDynamicLocale.locale');
-          var job = createAsync(done);
+      if (angular.version.minor < 7) {
+        it('should store the change in $cookieStore', function(done) {
+          inject(function ($timeout, $locale, $cookieStore, tmhDynamicLocale) {
+            $cookieStore.remove('tmhDynamicLocale.locale');
+            var job = createAsync(done);
 
-          job
-            .runs(function() {
-              tmhDynamicLocale.set('es');
-              expect($cookieStore.get('tmhDynamicLocale.locale')).toBe(undefined);
-            })
-            .waitsFor(function() {
-              $timeout.flush(50);
-              return $locale.id === 'es';
-            }, 'locale not updated', 2000)
-            .runs(function() {
-              expect($cookieStore.get('tmhDynamicLocale.locale')).toBe('es');
-            })
-            .done();
-          job.start();
+            job
+              .runs(function() {
+                tmhDynamicLocale.set('es');
+                expect($cookieStore.get('tmhDynamicLocale.locale')).toBe(undefined);
+              })
+              .waitsFor(function() {
+                $timeout.flush(50);
+                return $locale.id === 'es';
+              }, 'locale not updated', 2000)
+              .runs(function() {
+                expect($cookieStore.get('tmhDynamicLocale.locale')).toBe('es');
+              })
+              .done();
+            job.start();
+          });
         });
-      });
+      }
       it('should store the change in $cookies', function(done) {
         inject(function ($timeout, $locale, $cookies, tmhDynamicLocale) {
           $cookies.remove('tmhDynamicLocale.locale');
@@ -513,10 +515,17 @@
         });
       });
       describe('reading the locale at initialization', function () {
-        beforeEach(inject(function ($cookieStore, $rootScope) {
-          $cookieStore.put('tmhDynamicLocale.locale', 'it');
-          $rootScope.$apply();
-        }));
+        if (angular.version.minor < 7) {
+          beforeEach(inject(function ($cookieStore, $rootScope) {
+            $cookieStore.put('tmhDynamicLocale.locale', 'it');
+            $rootScope.$apply();
+          }));
+        } else {
+          beforeEach(inject(function ($cookies, $rootScope) {
+            $cookies.putObject('tmhDynamicLocale.locale', 'it');
+            $rootScope.$apply();
+          }));
+        }
 
         it('should load the locale on initialization', function(done) {
           inject(function ($timeout, $locale) {
@@ -542,10 +551,17 @@
         beforeEach(module(function(tmhDynamicLocaleProvider) {
           tmhDynamicLocaleProvider.defaultLocale('es');
         }));
-        beforeEach(inject(function ($cookieStore, $rootScope) {
-          $cookieStore.put('tmhDynamicLocale.locale', 'it');
-          $rootScope.$apply();
-        }));
+        if (angular.version.minor < 7) {
+          beforeEach(inject(function ($cookieStore, $rootScope) {
+            $cookieStore.put('tmhDynamicLocale.locale', 'it');
+            $rootScope.$apply();
+          }));
+        } else {
+          beforeEach(inject(function ($cookies, $rootScope) {
+            $cookies.putObject('tmhDynamicLocale.locale', 'it');
+            $rootScope.$apply();
+          }));
+        }
 
         it('should load the locale on initialization', function(done) {
           inject(function ($timeout, $locale) {
@@ -572,25 +588,53 @@
           tmhDynamicLocaleProvider.storageKey('customStorageKeyName');
         }));
 
+        if (angular.version.minor < 7) {
+          it('should change the name of the storageKey', function(done) {
+            inject(function ($timeout, $locale, $cookieStore, tmhDynamicLocale) {
+              $cookieStore.remove('tmhDynamicLocale.locale');
+              $cookieStore.remove('customStorageKeyName');
+              var job = createAsync(done);
+  
+              job
+                .runs(function() {
+                  tmhDynamicLocale.set('es');
+                  expect($cookieStore.get('customStorageKeyName')).toBe(undefined);
+                  expect($cookieStore.get('tmhDynamicLocale.locale')).toBe(undefined);
+                })
+                .waitsFor(function() {
+                  $timeout.flush(50);
+                  return $locale.id === 'es';
+                }, 'locale not updated', 2000)
+                .runs(function() {
+                  expect($cookieStore.get('tmhDynamicLocale.locale')).toBe(undefined);
+                  expect($cookieStore.get('customStorageKeyName')).toBe('es');
+                })
+                .done();
+              job.start();
+            });
+          });
+        }
+
+
         it('should change the name of the storageKey', function(done) {
-          inject(function ($timeout, $locale, $cookieStore, tmhDynamicLocale) {
-            $cookieStore.remove('tmhDynamicLocale.locale');
-            $cookieStore.remove('customStorageKeyName');
+          inject(function ($timeout, $locale, $cookies, tmhDynamicLocale) {
+            $cookies.remove('tmhDynamicLocale.locale');
+            $cookies.remove('customStorageKeyName');
             var job = createAsync(done);
 
             job
               .runs(function() {
                 tmhDynamicLocale.set('es');
-                expect($cookieStore.get('customStorageKeyName')).toBe(undefined);
-                expect($cookieStore.get('tmhDynamicLocale.locale')).toBe(undefined);
+                expect($cookies.getObject('customStorageKeyName')).toBe(undefined);
+                expect($cookies.getObject('tmhDynamicLocale.locale')).toBe(undefined);
               })
               .waitsFor(function() {
                 $timeout.flush(50);
                 return $locale.id === 'es';
               }, 'locale not updated', 2000)
               .runs(function() {
-                expect($cookieStore.get('tmhDynamicLocale.locale')).toBe(undefined);
-                expect($cookieStore.get('customStorageKeyName')).toBe('es');
+                expect($cookies.getObject('tmhDynamicLocale.locale')).toBe(undefined);
+                expect($cookies.getObject('customStorageKeyName')).toBe('es');
               })
               .done();
             job.start();
