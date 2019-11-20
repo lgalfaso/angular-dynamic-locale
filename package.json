@@ -4,7 +4,7 @@
   "description": "A minimal module that adds the ability to dynamically change the locale",
   "license": "MIT",
   "devDependencies": {
-    "angular": "1.7.8",
+    "angular": "1.7.9",
     "angular-cookies": "1.7.8",
     "angular-i18n": "1.7.8",
     "angular-mocks": "1.7.8",
