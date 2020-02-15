@@ -21,10 +21,10 @@
     "grunt-eslint": "^21.1.0",
     "grunt-karma": "^3.0.2",
     "grunt-npm": "0.0.2",
-    "jasmine-core": "^3.4.0",
-    "karma": "^4.1.0",
+    "jasmine-core": "^3.5.0",
+    "karma": "^4.4.1",
     "karma-chrome-launcher": "^2.2.0",
-    "karma-firefox-launcher": "^1.1.0",
+    "karma-firefox-launcher": "^1.3.0",
     "karma-jasmine": "2.0.1",
     "karma-phantomjs-launcher": "1.0.4"
   },
@@ -38,6 +38,6 @@
   },
   "types": "./src/tmhDynamicLocale.d.ts",
   "dependencies": {
-    "@types/angular": "^1.6.54"
+    "@types/angular": "^1.6.57"
   }
 }
