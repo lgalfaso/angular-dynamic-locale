@@ -15,4 +15,9 @@ declare namespace tmh
         set(locale: string): ng.IPromise<ng.ILocaleService>;
         get(): string;
     }
+    interface IDynamicLocaleProvider
+    {
+        localeLocationPattern(locationPattern: string): void;
+        defaultLocale(locale: string): void;
+    }
 }
